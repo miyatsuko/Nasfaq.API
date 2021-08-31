@@ -104,26 +104,6 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<string> BuyCoin(BuyCoin data)
-        {
-            return await HttpHelper.POST(
-                httpClient,
-                "https://nasfaq.biz/api/buyCoin",
-                headers,
-                JsonSerializer.Serialize<BuyCoin>(data)
-            );
-        }
-
-        public async Task<string> SellCoin(SellCoin data)
-        {
-            return await HttpHelper.POST(
-                httpClient,
-                "https://nasfaq.biz/api/sellCoin",
-                headers,
-                JsonSerializer.Serialize<SellCoin>(data)
-            );
-        }
-
         public async Task<string> BuySuperchat(BuySuperchat data)
         {
             return await HttpHelper.POST(
@@ -247,11 +227,18 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<GetHistory> GetHistory(long timestamp = 0L)
+        public async Task<GetHistory> GetHistory(bool fullHistory, long timestamp = default)
         {
+            string param = "";
+            if(fullHistory) param = "?full";
+            if(timestamp != default)
+            {
+                if(fullHistory) param += $"?timestamp={timestamp}";
+                else param = $"&timestamp={timestamp}";
+            }
             return await HttpHelper.GET<GetHistory>(
                 httpClient,
-                "https://nasfaq.biz/api/getHistory" + (timestamp == 0L ? "" : $"?timestamp={timestamp}"),
+                $"https://nasfaq.biz/api/getHistory{param}",
                 headers
             );
         }
@@ -265,20 +252,46 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<GetLeaderboard> GetLeaderboard()
+        public async Task<GetLeaderboard> GetLeaderboard(bool leaderboard, bool oshiboard)
         {
+            string param = "";
+            if(leaderboard) param = "?leaderboard";
+            if(oshiboard)
+            {
+                if(leaderboard) param += "&oshiboard";
+                else param = "?oshiboard";
+            }
             return await HttpHelper.GET<GetLeaderboard>(
                 httpClient,
-                "https://nasfaq.biz/api/getLeaderboard",
+                $"https://nasfaq.biz/api/getLeaderboard{param}",
                 headers
             );
         }
 
-        public async Task<GetMarketInfo> GetMarketInfo()
+        public async Task<GetMarketInfo> GetMarketInfo(bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        {
+            return await GetMarketInfo("?all", showPrice, showSaleValue, showInCirculation, showHistory);
+        }
+
+        public async Task<GetMarketInfo> GetMarketInfo(IList<string> coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        {
+            string coinsstr = "?coins=";
+            for(int i = 0; i < coins.Count; i++)
+            {
+                coinsstr += coins[i];
+                if(i + 1 < coins.Count - 1)
+                {
+                    coinsstr += ",";
+                }
+            }
+            return await GetMarketInfo(coinsstr, showPrice, showSaleValue, showInCirculation, showHistory);
+        }
+
+        private async Task<GetMarketInfo> GetMarketInfo(string coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
         {
             return await HttpHelper.GET<GetMarketInfo>(
                 httpClient,
-                "https://nasfaq.biz/api/getMarketInfo",
+                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice}&saleValue={showSaleValue}&inCirculation={showInCirculation}{(showHistory ? "&history" : "")}",
                 headers
             );
         }
@@ -288,6 +301,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<GetNews>(
                 httpClient,
                 "https://nasfaq.biz/api/getNews",
+                headers
+            );
+        }
+
+        public async Task<GetSession> GetSession()
+        {
+            return await HttpHelper.GET<GetSession>(
+                httpClient,
+                "https://nasfaq.biz/api/getSession",
                 headers
             );
         }
