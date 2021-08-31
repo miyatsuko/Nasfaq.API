@@ -358,8 +358,5 @@ namespace Nasfaq.API
                 headers
             );
         }
-
-
-
     }
 }
