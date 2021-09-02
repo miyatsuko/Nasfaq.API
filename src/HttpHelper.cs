@@ -14,7 +14,7 @@ namespace Nasfaq.API
     {
         public static async Task<string> GET(HttpClient client, string uri, List<(string, string)> header, string cookies = null)
         {
-            string outdata = default;
+            HttpResponseMessage response;
             using(HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, uri))
             {
                 SetHeaderValues(requestMessage.Headers, header);
@@ -22,52 +22,48 @@ namespace Nasfaq.API
                 {
                     requestMessage.Headers.Add("Cookies", cookies);
                 }
-                HttpResponseMessage response = await client.SendAsync(requestMessage);
+                response = await client.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
-                outdata = await response.Content.ReadAsStringAsync();
             }
-            return outdata;
+
+            bool isGzipped = false;
+            if(response.Content.Headers.Contains("Content-Encoding"))
+            {
+                foreach(string str in response.Content.Headers.GetValues("Content-Encoding"))
+                {
+                    if(str == "gzip")
+                    {
+                        isGzipped = true;
+                        Console.WriteLine("Was gzip");
+                        break;
+                    }
+                }
+            }
+
+            using(Stream responseData = await response.Content.ReadAsStreamAsync())
+            using(MemoryStream memStream = new MemoryStream())
+            {
+                if(isGzipped)
+                {
+                    using(GZipStream decompressedData = new GZipStream(responseData, CompressionMode.Decompress))
+                    {
+                        decompressedData.CopyTo(memStream);
+                    }
+                }
+                else
+                {
+                    responseData.CopyTo(memStream);
+                }
+
+                memStream.Position = 0L;
+                return Encoding.UTF8.GetString(memStream.ToArray());
+            }
         }
 
         public static async Task<T> GET<T>(HttpClient client, string uri, List<(string, string)> header, string cookies = null)
         {
-            T outdata = default;
-            using(HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, uri))
-            {
-                SetHeaderValues(requestMessage.Headers, header);
-                if(cookies != null)
-                {
-                    requestMessage.Headers.Add("Cookies", cookies);
-                }
-                HttpResponseMessage response = await client.SendAsync(requestMessage);
-                response.EnsureSuccessStatusCode();
-
-                if(response.Content.Headers.Contains("Content-Encoding"))
-                {
-                    foreach(string str in response.Content.Headers.GetValues("Content-Encoding"))
-                    {
-                        if(str == "gzip")
-                        {
-                            using(Stream responseData = await response.Content.ReadAsStreamAsync())
-                            using(MemoryStream memStream = new MemoryStream())
-                            using(GZipStream decompressedData = new GZipStream(responseData, CompressionMode.Decompress))
-                            {
-                                decompressedData.CopyTo(memStream);
-                                memStream.Position = 0L;
-                                outdata = await JsonSerializer.DeserializeAsync<T>(memStream);
-                            }
-                            return outdata;
-                        }
-                        
-                    }
-                }
-                using(Stream responseData = await response.Content.ReadAsStreamAsync())
-                {
-                    outdata = await JsonSerializer.DeserializeAsync<T>(responseData);
-                }
-                
-            }
-            return outdata;
+            string result = await GET(client, uri, header, cookies);
+            return JsonSerializer.Deserialize<T>(result);
         }
 
         public static async Task<string> POST(HttpClient client, string uri, List<(string, string)> header, string content, string cookies = null)
