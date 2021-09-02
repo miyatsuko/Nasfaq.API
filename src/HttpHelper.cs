@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using System.IO.Compression;
 
 namespace Nasfaq.API
 {
@@ -38,19 +39,33 @@ namespace Nasfaq.API
                 {
                     requestMessage.Headers.Add("Cookies", cookies);
                 }
-                Console.WriteLine(requestMessage.ToString());
                 HttpResponseMessage response = await client.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
+
+                if(response.Content.Headers.Contains("Content-Encoding"))
+                {
+                    foreach(string str in response.Content.Headers.GetValues("Content-Encoding"))
+                    {
+                        if(str == "gzip")
+                        {
+                            using(Stream responseData = await response.Content.ReadAsStreamAsync())
+                            using(MemoryStream memStream = new MemoryStream())
+                            using(GZipStream decompressedData = new GZipStream(responseData, CompressionMode.Decompress))
+                            {
+                                decompressedData.CopyTo(memStream);
+                                memStream.Position = 0L;
+                                outdata = await JsonSerializer.DeserializeAsync<T>(memStream);
+                            }
+                            return outdata;
+                        }
+                        
+                    }
+                }
                 using(Stream responseData = await response.Content.ReadAsStreamAsync())
                 {
-                    foreach(var str in response.Content.Headers.GetValues("Content-Encoding"))
-                    {
-                        Console.WriteLine(str);
-                    }
-                    Console.WriteLine($"GET: {uri}\nRESPONSE: {responseData.ToString()}");
-                    responseData.Position++;
                     outdata = await JsonSerializer.DeserializeAsync<T>(responseData);
                 }
+                
             }
             return outdata;
         }

@@ -56,16 +56,30 @@ namespace Nasfaq.API
             mainSocket?.Dispose();
             httpClient?.Dispose();
         }
+
+        public static long GetTimestamp(int year, int month, int day, int minutes = 0, int seconds = 0, int milliseconds = 0)
+        {
+            return new DateTimeOffset(new DateTime(year, month, day, minutes, seconds, milliseconds)).ToUnixTimeMilliseconds();
+        }
         
         public async Task OpenSocketAsync()
         {
             await mainSocket.ConnectAsync(httpClient, $"holosesh={holosesh}");
-            mainSocket.OnOpen = () => {Console.WriteLine("open");};
-            mainSocket.OnError = (s) => {Console.WriteLine(s);};
-            mainSocket.OnMessage = (s) => {
-
-                Console.WriteLine(s);
-                IWebsocketData iws = WebsocketReader.Read(s);
+            ////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            mainSocket.OnOpen += () => {Console.WriteLine("open");};
+            mainSocket.OnError += (s) => {Console.WriteLine(s);};
+            mainSocket.OnMessage += (s) => {
+                
+                string message = null;
+                unsafe
+                {
+                    fixed(byte* msgBytesPtr = s)
+                    {
+                        message = new string((sbyte*)msgBytesPtr, 0, s.Length);
+                    }
+                }
+                Console.WriteLine(message);
+                IWebsocketData iws = WebsocketReader.Read(message);
             };
         }
 
@@ -164,6 +178,16 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<string> Trade(Trade data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/trade",
+                headers,
+                JsonSerializer.Serialize<Trade>(data)
+            );
+        }
+
         public async Task<DestroySession> DestroySession()
         {
             return await HttpHelper.GET<DestroySession>(
@@ -182,11 +206,11 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<GetChatLog> GetChatLog(string roomid = null)
+        public async Task<GetChatLog> GetChatLog(string roomid)
         {
             return await HttpHelper.GET<GetChatLog>(
                 httpClient,
-                "https://nasfaq.biz/api/getChatLog" + (roomid == null ? "" : $"?room={roomid}"),
+                $"https://nasfaq.biz/api/getChatLog?room={roomid}",
                 headers
             );
         }
@@ -233,8 +257,8 @@ namespace Nasfaq.API
             if(fullHistory) param = "?full";
             if(timestamp != default)
             {
-                if(fullHistory) param += $"?timestamp={timestamp}";
-                else param = $"&timestamp={timestamp}";
+                if(fullHistory) param += $"&timestamp={timestamp}";
+                else param = $"?timestamp={timestamp}";
             }
             return await HttpHelper.GET<GetHistory>(
                 httpClient,
@@ -291,7 +315,7 @@ namespace Nasfaq.API
         {
             return await HttpHelper.GET<GetMarketInfo>(
                 httpClient,
-                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice}&saleValue={showSaleValue}&inCirculation={showInCirculation}{(showHistory ? "&history" : "")}",
+                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice.ToString().ToLower()}&saleValue={showSaleValue.ToString().ToLower()}&inCirculation={showInCirculation.ToString().ToLower()}{(showHistory ? "&history" : "")}",
                 headers
             );
         }

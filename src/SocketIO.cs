@@ -31,9 +31,9 @@ namespace Nasfaq.API
         string wsUrl;
         WebSocket ws;
 
-        public Action OnOpen;
-        public Action<string> OnMessage;
-        public Action<string> OnError;
+        public event Action OnOpen;
+        public event Action<byte[]> OnMessage;
+        public event Action<string> OnError;
 
         static readonly List<(string, string)> headers = new List<(string, string)>
         {
@@ -107,25 +107,34 @@ namespace Nasfaq.API
             }
         }
 
-        private static void OnMessageWrap(MessageEventArgs e, WebSocket ws, Action<string> OnMessage)
+        private static void OnMessageWrap(MessageEventArgs e, WebSocket ws, Action<byte[]> OnMessage)
         {
             try
             {
-                if(e.Data == "3probe") //probe response
+                switch(e.Data[0])
                 {
-                    ws.Send("5"); //upgrade
-                }
-                else if(e.Data == "2") //ping
-                {
-                    ws.Send("3"); //pong
-                }
-                else if(e.Data == "1") //close
-                {
-                    ws.Close();
-                }
-                else //message event
-                {
-                    OnMessage?.Invoke(e.Data.Substring(2));
+                    case '1': //close
+                        ws.Close();
+                        break;
+                    case '2': //ping
+                        ws.Send("3"); //pong
+                        break;
+                    case '3': //3probe
+                        ws.Send("5");
+                        break;
+                    case '4': //message
+                        switch(e.Data[1])
+                        {
+                            case '2': //event
+
+                                OnMessage?.Invoke(e.RawData.SubArray(2, e.RawData.Length - 2));
+                                break;
+                            default:
+                                throw new InvalidDataException("SocketIO: Unhandled Message: " + e.Data);
+                        }
+                        break;
+                    default:
+                        throw new InvalidDataException("SocketIO: Unhandled Message: " + e.Data);
                 }
             }
             catch(Exception ex)
