@@ -177,7 +177,7 @@ namespace Nasfaq.API
                 JsonSerializer.Serialize<SetUserLeaderboardColor>(data)
             );
         }
-
+        
         public async Task<string> Trade(Trade data)
         {
             return await HttpHelper.POST(
@@ -316,6 +316,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<GetMarketInfo>(
                 httpClient,
                 $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice.ToString().ToLower()}&saleValue={showSaleValue.ToString().ToLower()}&inCirculation={showInCirculation.ToString().ToLower()}{(showHistory ? "&history" : "")}",
+                headers
+            );
+        }
+
+        public async Task<GetMarketSwitch> GetMarketSwitch()
+        {
+            return await HttpHelper.GET<GetMarketSwitch>(
+                httpClient,
+                "https://nasfaq.biz/api/getMarketSwitch",
                 headers
             );
         }
