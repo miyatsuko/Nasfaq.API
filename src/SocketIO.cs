@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.Json;
 using WebSocketSharp;
 using System.Collections.Generic;
 using Nasfaq.JSON;
@@ -47,6 +48,19 @@ namespace Nasfaq.API
             ("User-Agent", "Mozilla/5.0"),
         };
 
+        public static string BytesToString(byte[] bytes)
+        {
+            string message = null;
+            unsafe
+            {
+                fixed(byte* ptr = bytes)
+                {
+                    message = new string((sbyte*)ptr, 0, bytes.Length);
+                }
+            }
+            return message;
+        }
+
         public SocketIO(string rest, string ws)
         {
             this.restUrl = rest;
@@ -63,20 +77,21 @@ namespace Nasfaq.API
             }
         }
 
-        public async Task ConnectAsync(HttpClient client, string cookies = null)
+        public async Task ConnectAsync(HttpClient client, string userId = null, string cookies = null)
         {
             //open packet
-            GetSocketIOSID socketSID = await HttpHelper.GET<GetSocketIOSID>(
+            string socketSIDjson = await HttpHelper.GET(
                 client,
-                $"{restUrl}?EIO=4&transport=polling&t={Yeast.GetTimestamp()}", 
+                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}", 
                 headers,
                 cookies);
+            GetSocketIOSID socketSID = JsonSerializer.Deserialize<GetSocketIOSID>(socketSIDjson.Substring(1));
             Console.WriteLine($"SocketIO: SID {socketSID.sid}");
-
+            
             //namespace connection request
             string response2 = await HttpHelper.POST(
                 client,
-                $"{restUrl}?EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
+                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
                 headers, 
                 "40",
                 cookies);
@@ -85,12 +100,12 @@ namespace Nasfaq.API
             //namespace connection approval
             string response3 = await HttpHelper.GET(
                 client,
-                $"{restUrl}?EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
+                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
                 headers,
                 cookies);
             Console.WriteLine($"SocketIO: response3 {response3}");
 
-            ws = new WebSocket($"{wsUrl}?EIO=4&transport=websocket&sid={socketSID.sid}");
+            ws = new WebSocket($"{wsUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=websocket&sid={socketSID.sid}");
             ws.OnOpen += (sender, e) => { OnOpen?.Invoke(); };
             ws.OnMessage += (sender, e) => { OnMessageWrap(e, ws, OnMessage); };
             ws.OnError += (StringReader, e) => { OnError?.Invoke(e.Message); };

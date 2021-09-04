@@ -15,15 +15,36 @@ namespace Nasfaq.API
         SocketIO mainSocket;
         string holosesh;
 
+        public event Action SocketOnOpen
+        {
+            add => mainSocket.OnOpen += value;
+            remove => mainSocket.OnOpen -= value;
+        }
+
+        public event Action<byte[]> SocketOnMessage
+        {
+            add => mainSocket.OnMessage += value;
+            remove => mainSocket.OnMessage -= value;
+        }
+
+        public event Action<string> SocketOnError
+        {
+            add => mainSocket.OnError += value;
+            remove => mainSocket.OnError -= value;
+        }
+
         readonly List<(string, string)> headers;
         
-        public NasfaqAPI(string holosesh)
+        public NasfaqAPI(string holosesh = null)
         {
             this.holosesh = holosesh;
 
             Uri baseAddress = new Uri("https://nasfaq.biz/");
             CookieContainer cookieContainer = new CookieContainer();
-            cookieContainer.Add(baseAddress, new Cookie("holosesh", holosesh));
+            if(holosesh != null)
+            {
+                cookieContainer.Add(baseAddress, new Cookie("holosesh", holosesh));
+            }
             HttpClientHandler handler = new HttpClientHandler() { CookieContainer = cookieContainer};
             httpClient = new HttpClient(handler);
 
@@ -35,7 +56,6 @@ namespace Nasfaq.API
                 ("Accept-Language", "en-US,en;q=0.5"),
                 ("Accept-Encoding", "gzip, deflate, br"),
                 ("Connection", "keep-alive"),
-                ("Cookie", $"holosesh={holosesh}"),
                 ("Host", "nasfaq.biz"),
                 ("Origin", "https://nasfaq.biz"),
                 ("Referer", "https://nasfaq.biz/market"),
@@ -44,6 +64,10 @@ namespace Nasfaq.API
                 ("Sec-Fetch-Site", "same-origin"),
                 ("User-Agent", "Mozilla/5.0"),
             };
+            if(holosesh != null)
+            {
+                headers.Add(("Cookie", $"holosesh={holosesh}"));
+            }
         }
 
         ~NasfaqAPI()
@@ -62,25 +86,9 @@ namespace Nasfaq.API
             return new DateTimeOffset(new DateTime(year, month, day, minutes, seconds, milliseconds)).ToUnixTimeMilliseconds();
         }
         
-        public async Task OpenSocketAsync()
+        public async Task OpenSocketAsync(string userId = null)
         {
-            await mainSocket.ConnectAsync(httpClient, $"holosesh={holosesh}");
-            ////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            mainSocket.OnOpen += () => {Console.WriteLine("open");};
-            mainSocket.OnError += (s) => {Console.WriteLine(s);};
-            mainSocket.OnMessage += (s) => {
-                
-                string message = null;
-                unsafe
-                {
-                    fixed(byte* msgBytesPtr = s)
-                    {
-                        message = new string((sbyte*)msgBytesPtr, 0, s.Length);
-                    }
-                }
-                Console.WriteLine(message);
-                IWebsocketData iws = WebsocketReader.Read(message);
-            };
+            await mainSocket.ConnectAsync(httpClient, userId);
         }
 
         public void CloseSocketAsync()
@@ -98,6 +106,11 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<string> AddMessage(string room, string text)
+        {
+            return await AddMessage(new AddMessage(room, text));
+        }
+
         public async Task<string> AddReport(AddReport data)
         {
             return await HttpHelper.POST(
@@ -106,6 +119,11 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<AddReport>(data)
             );
+        }
+
+        public async Task<string> AddReport(int id, string roomId, string text, long timestamp, string username)
+        {
+            return await AddReport(new AddReport(id, roomId, text, timestamp, username));
         }
 
         public async Task<string> AddRoom(AddRoom data)
@@ -118,6 +136,11 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<string> AddRoom(string subject, string openingText)
+        {
+            return await AddRoom(new AddRoom(subject, openingText));
+        }
+
         public async Task<string> BuySuperchat(BuySuperchat data)
         {
             return await HttpHelper.POST(
@@ -126,6 +149,11 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<BuySuperchat>(data)
             );
+        }
+
+        public async Task<string> BuySuperchat(double amount, string coin, string message)
+        {
+            return await BuySuperchat(new BuySuperchat(amount, coin, message));
         }
 
         public async Task<string> ChangeEmail(ChangeEmail data)
@@ -138,6 +166,11 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<string> ChangeEmail(string email)
+        {
+            return await ChangeEmail(new ChangeEmail(email));
+        }
+
         public async Task<string> ChangeUsername(ChangeUsername data)
         {
             return await HttpHelper.POST(
@@ -146,6 +179,11 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<ChangeUsername>(data)
             );
+        }
+
+        public async Task<string> ChangeUsername(string username)
+        {
+            return await ChangeUsername(new ChangeUsername(username));
         }
 
         public async Task<string> RollGacha(RollGacha data)
@@ -158,6 +196,11 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<string> RollGacha(bool bulk)
+        {
+            return await RollGacha(new RollGacha(bulk));
+        }
+
         public async Task<string> SetIcon(SetIcon data)
         {
             return await HttpHelper.POST(
@@ -166,6 +209,11 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<SetIcon>(data)
             );
+        }
+
+        public async Task<string> SetIcon(string icon)
+        {
+            return await SetIcon(new SetIcon(icon));
         }
 
         public async Task<string> SetUserLeaderboardColor(SetUserLeaderboardColor data)
@@ -177,6 +225,12 @@ namespace Nasfaq.API
                 JsonSerializer.Serialize<SetUserLeaderboardColor>(data)
             );
         }
+
+        public async Task<string> SetUserLeaderboardColor(string color)
+        {
+            return await SetUserLeaderboardColor(new SetUserLeaderboardColor(color));
+        }
+        
         
         public async Task<string> Trade(Trade data)
         {
@@ -186,6 +240,21 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<Trade>(data)
             );
+        }
+
+        public async Task<string> Trade(string coin, TradeType type)
+        {
+            return await Trade(new Trade(coin, type));
+        }
+
+        public async Task<string> Trade(string[] buys, string[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade(Trade_Coin[] orders)
+        {
+            return await Trade(new Trade(orders));
         }
 
         public async Task<DestroySession> DestroySession()
@@ -430,11 +499,29 @@ namespace Nasfaq.API
 
         public async Task<GetUserInfo> GetUserInfo()
         {
-            return await HttpHelper.GET<GetUserInfo>(
+            string json = await HttpHelper.GET(
                 httpClient,
                 "https://nasfaq.biz/api/getUserInfo",
                 headers
             );
+
+            JsonDocument jsonDocument = JsonDocument.Parse(json);
+            JsonElement root = jsonDocument.RootElement;
+            GetUserInfo getUserInfo = new GetUserInfo();
+            getUserInfo.loggedout = root.GetProperty("loggedout").GetBoolean();
+            getUserInfo.username = root.GetProperty("username").GetString();
+            getUserInfo.id = root.GetProperty("id").GetString();
+            getUserInfo.email = root.GetProperty("email").GetString();
+            getUserInfo.performance = JsonSerializer.Deserialize<UserInfo_PerformanceTick[]>(root.GetProperty("performance").GetString());
+            getUserInfo.verified = root.GetProperty("verified").GetBoolean();
+            getUserInfo.wallet = JsonSerializer.Deserialize<UserWallet>(root.GetProperty("wallet").GetString());
+            getUserInfo.icon = root.GetProperty("icon").GetString();
+            getUserInfo.admin = root.GetProperty("admin").GetBoolean();
+            getUserInfo.settings = JsonSerializer.Deserialize<UserInfo_Settings>(root.GetProperty("settings").GetString());
+            getUserInfo.color = root.GetProperty("color").GetString();
+            getUserInfo.muted = JsonSerializer.Deserialize<UserInfo_Muted>(root.GetProperty("muted").GetString());
+            getUserInfo.items = JsonSerializer.Deserialize<Dictionary<string, UserInfo_Item[]>>(root.GetProperty("items").GetString());
+            return getUserInfo;
         }
 
         public async Task<GetUserItems> GetUserItems(string userid)

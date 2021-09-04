@@ -77,7 +77,6 @@ namespace Nasfaq.API
                 {
                     requestMessage.Headers.Add("Cookies", cookies);
                 }
-                Console.WriteLine(requestMessage.ToString());
                 HttpResponseMessage response = await client.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 outdata = await response.Content.ReadAsStringAsync();
