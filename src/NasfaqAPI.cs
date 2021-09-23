@@ -80,11 +80,6 @@ namespace Nasfaq.API
             mainSocket?.Dispose();
             httpClient?.Dispose();
         }
-
-        public static long GetTimestamp(int year, int month, int day, int minutes = 0, int seconds = 0, int milliseconds = 0)
-        {
-            return new DateTimeOffset(new DateTime(year, month, day, minutes, seconds, milliseconds)).ToUnixTimeMilliseconds();
-        }
         
         public async Task OpenSocketAsync(string userId = null)
         {
