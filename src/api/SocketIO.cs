@@ -48,6 +48,21 @@ namespace Nasfaq.API
             ("User-Agent", "Mozilla/5.0"),
         };
 
+        public static IWebsocketData BytesToSocketData(byte[] data)
+        {
+            string message = SocketIO.BytesToString(data);
+            IWebsocketData websocketData = default;
+            try
+            {
+                websocketData = WebsocketReader.Read(message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception when trying to parse Websocket: {e.Message}\nOriginal message:\n{message}");
+            }
+            return websocketData;
+        }
+
         public static string BytesToString(byte[] bytes)
         {
             string message = null;
