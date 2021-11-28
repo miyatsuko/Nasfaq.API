@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Nasfaq.JSON\Nasfaq.JSON.csproj"/>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="websocketsharp.core" Version="1.0.0"/>
   </ItemGroup>
   <PropertyGroup>
