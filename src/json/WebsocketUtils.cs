@@ -40,6 +40,7 @@ namespace Nasfaq.JSON
                     case "coinHistoryUpdate": return ReadStandard<WSCoinHistoryUpdate>(jsonElement);
                     case "creditsUpdate": return ReadStandard<WSCreditsUpdate>(jsonElement);
                     case "auctionUpdate": return ReadStandard<WSAuctionUpdate>(jsonElement);
+                    case "auctionFeed": return ReadStandard<WSAuctionFeed>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }

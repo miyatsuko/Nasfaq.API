@@ -262,6 +262,71 @@ namespace Nasfaq.API
             return await Trade(new Trade(orders));
         }
 
+        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(string auctionId, double bid, string item)
+        {
+            return await PlaceAuctionBid(new PlaceAuctionBid_Request(auctionId, bid, item));
+        }
+
+        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(PlaceAuctionBid_Request bid)
+        {
+            return await HttpHelper.POST<PlaceAuctionBid_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionBid",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionBid_Request>(bid)
+            );
+        }
+
+        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(string auctionId, string item)
+        {
+            return await PlaceAuctionCancel(new PlaceAuctionCancel_Request(auctionId, item));
+        }
+
+        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(PlaceAuctionCancel_Request cancel)
+        {
+            return await HttpHelper.POST<PlaceAuctionCancel_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionCancel",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionCancel_Request>(cancel)
+            );
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, string expiration, string item, double minimumBid)
+        {
+            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, expiration, item, minimumBid));
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, int hours, int minutes, string item, double minimumBid)
+        {
+            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, TimeUtils.GetAuctionString(hours, minutes), item, minimumBid));
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionSell(PlaceAuctionSell_Request sell)
+        {
+            return await HttpHelper.POST<PlaceAuctionSell_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionSell",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionSell_Request>(sell)
+            );
+        }
+
+        public async Task<SendAuctionMessage_Response> SendAuctionMessage(string auctionId, string message)
+        {
+            return await SendAuctionMessage(new SendAuctionMessage_Request(auctionId, message));
+        }
+
+        public async Task<SendAuctionMessage_Response> SendAuctionMessage(SendAuctionMessage_Request message)
+        {
+            return await HttpHelper.POST<SendAuctionMessage_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/sendAuctionMessage",
+                headers,
+                JsonSerializer.Serialize<SendAuctionMessage_Request>(message)
+            );
+        }
+
         public async Task<DestroySession> DestroySession()
         {
             return await HttpHelper.GET<DestroySession>(
@@ -276,6 +341,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<GetAnnouncement>(
                 httpClient,
                 "https://nasfaq.biz/api/getAnnouncement",
+                headers
+            );
+        }
+
+        public async Task<GetAuctionFeed> GetAuctionFeed(string auctionId)
+        {
+            return await HttpHelper.GET<GetAuctionFeed>(
+                httpClient,
+                $"https://nasfaq.biz/api/getAuctionFeed?auctionid={auctionId}",
                 headers
             );
         }

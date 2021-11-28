@@ -101,7 +101,6 @@ namespace Nasfaq.API
                 headers,
                 cookies);
             GetSocketIOSID socketSID = JsonSerializer.Deserialize<GetSocketIOSID>(socketSIDjson.Substring(1));
-            Console.WriteLine($"SocketIO: SID {socketSID.sid}");
             
             //namespace connection request
             string response2 = await HttpHelper.POST(
@@ -110,7 +109,6 @@ namespace Nasfaq.API
                 headers, 
                 "40",
                 cookies);
-            Console.WriteLine($"SocketIO: response2 {response2}");
 
             //namespace connection approval
             string response3 = await HttpHelper.GET(
@@ -118,7 +116,6 @@ namespace Nasfaq.API
                 $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
                 headers,
                 cookies);
-            Console.WriteLine($"SocketIO: response3 {response3}");
 
             ws = new WebSocket($"{wsUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=websocket&sid={socketSID.sid}");
             ws.OnOpen += (sender, e) => { OnOpen?.Invoke(); };
@@ -170,8 +167,6 @@ namespace Nasfaq.API
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                File.AppendAllText("websocketerrors.txt", ex.Message);
-                File.AppendAllText("websocketerrors.txt", "Message was: "+e.Data + "\n\n\n\n");
             }
         }
 

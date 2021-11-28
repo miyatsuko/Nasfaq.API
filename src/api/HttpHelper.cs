@@ -68,7 +68,6 @@ namespace Nasfaq.API
         public static async Task<string> POST(HttpClient client, string uri, List<(string, string)> header, string content, string cookies = null)
         {
             string outdata = default;
-            Console.WriteLine(content);
             using(HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, uri))
             {
                 requestMessage.Content = new StringContent(content, Encoding.UTF8, /*"text/plain"*/ "application/json");
@@ -82,6 +81,12 @@ namespace Nasfaq.API
                 outdata = await response.Content.ReadAsStringAsync();
             }
             return outdata;
+        }
+
+        public static async Task<T> POST<T>(HttpClient client, string uri, List<(string, string)> header, string content, string cookies = null)
+        {
+            string result = await POST(client, uri, header, content, cookies);
+            return JsonSerializer.Deserialize<T>(result);
         }
 
         public static void SetHeaderValues(HttpRequestHeaders header, List<(string, string)> headerValues)

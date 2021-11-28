@@ -5,6 +5,19 @@ namespace Nasfaq.JSON
     //api/placeAuctionSell/
     public class PlaceAuctionSell_Request
     {
+        public PlaceAuctionSell_Request()
+        {
+
+        }
+
+        public PlaceAuctionSell_Request(int amount, string expiration, string item, double minimumBid)
+        {
+            this.amount = amount;
+            this.expiration = expiration;
+            this.item = item;
+            this.minimumBid = minimumBid;
+        }
+
         public int amount { get; set; }
         public string expiration { get; set; } //"yyyy-mm-ddThh:mm:ss.000Z"
         public string item { get; set; }
@@ -26,8 +39,8 @@ namespace Nasfaq.JSON
         public string item { get; set; }
         public int amount { get; set; }
         public string seller { get; set; }
-        public string sellerId { get; set; }
-        public string bidderId { get; set; }
+        public string sellerid { get; set; }
+        public string bidderid { get; set; }
         public string bidder { get; set; }
         public double currentBid { get; set; }
         public string lastOutbidid { get; set; }

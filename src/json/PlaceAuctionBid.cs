@@ -3,6 +3,18 @@ namespace Nasfaq.JSON
     //api/placeAuctionBid/
     public class PlaceAuctionBid_Request
     {
+        public PlaceAuctionBid_Request()
+        {
+
+        }
+        
+        public PlaceAuctionBid_Request(string auctionId, double bid, string item)
+        {
+            this.auctionID = auctionId;
+            this.currentBid = bid;
+            this.item = item;
+        }
+
         public string auctionID { get; set; }
         public double currentBid { get; set; }
         public string item { get; set; }
