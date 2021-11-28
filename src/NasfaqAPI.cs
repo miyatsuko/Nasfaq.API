@@ -242,7 +242,17 @@ namespace Nasfaq.API
             return await Trade(new Trade(coin, type));
         }
 
+        public async Task<string> Trade(string coin, int quantity, TradeType type)
+        {
+            return await Trade(new Trade(coin, quantity, type));
+        }
+
         public async Task<string> Trade(string[] buys, string[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade((string, int)[] buys, (string, int)[] sells)
         {
             return await Trade(new Trade(buys, sells));
         }
@@ -502,12 +512,32 @@ namespace Nasfaq.API
 
             JsonDocument jsonDocument = JsonDocument.Parse(json);
             JsonElement root = jsonDocument.RootElement;
+
+            if(root.TryGetProperty("loggedout", out JsonElement isLoggedOut))
+            {
+                if(isLoggedOut.GetBoolean())
+                {
+                    throw new LoggedOutException();
+                }
+            }
+
             GetUserInfo getUserInfo = new GetUserInfo();
             getUserInfo.loggedout = root.GetProperty("loggedout").GetBoolean();
             getUserInfo.username = root.GetProperty("username").GetString();
             getUserInfo.id = root.GetProperty("id").GetString();
             getUserInfo.email = root.GetProperty("email").GetString();
-            getUserInfo.performance = JsonSerializer.Deserialize<UserInfo_PerformanceTick[]>(root.GetProperty("performance").GetString());
+            {
+                JsonElement perfArray = root.GetProperty("performance");
+                getUserInfo.performance = new UserInfo_PerformanceTick[perfArray.GetArrayLength()];
+                for(int i = 0; i < getUserInfo.performance.Length; i++)
+                {
+                    getUserInfo.performance[i] = new UserInfo_PerformanceTick()
+                    {
+                        worth = Convert.ToDouble(perfArray[i].GetProperty("worth").GetString()),
+                        timestamp = perfArray[i].GetProperty("timestamp").GetInt64()
+                    };
+                }
+            }
             getUserInfo.verified = root.GetProperty("verified").GetBoolean();
             getUserInfo.wallet = JsonSerializer.Deserialize<UserWallet>(root.GetProperty("wallet").GetString());
             getUserInfo.icon = root.GetProperty("icon").GetString();
