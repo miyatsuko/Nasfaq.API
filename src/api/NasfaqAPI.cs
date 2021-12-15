@@ -46,6 +46,7 @@ namespace Nasfaq.API
                 cookieContainer.Add(baseAddress, new Cookie("holosesh", holosesh));
             }
             HttpClientHandler handler = new HttpClientHandler() { CookieContainer = cookieContainer};
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
             httpClient = new HttpClient(handler);
 
             mainSocket = new SocketIO("https://nasfaq.biz/socket/", "wss://nasfaq.biz/socket/");
@@ -77,6 +78,7 @@ namespace Nasfaq.API
 
         public void Dispose()
         {
+            mainSocket?.DisconnectAsync();
             mainSocket?.Dispose();
             httpClient?.Dispose();
         }
