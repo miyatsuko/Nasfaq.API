@@ -183,6 +183,16 @@ namespace Nasfaq.API
             return await ChangeUsername(new ChangeUsername(username));
         }
 
+        public async Task<CraftItem_Response> CraftItem(string[] items)
+        {
+            return await HttpHelper.POST<CraftItem_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/craftItem",
+                headers,
+                JsonSerializer.Serialize<CraftItem_Request>(new CraftItem_Request() { items = items})
+            );
+        }
+
         public async Task<string> RollGacha(RollGacha data)
         {
             return await HttpHelper.POST(
