@@ -41,6 +41,7 @@ namespace Nasfaq.JSON
                     case "creditsUpdate": return ReadStandard<WSCreditsUpdate>(jsonElement);
                     case "auctionUpdate": return ReadStandard<WSAuctionUpdate>(jsonElement);
                     case "auctionFeed": return ReadStandard<WSAuctionFeed>(jsonElement);
+                    case "addMessageGlobal": return ReadStandard<WSAddMessageGlobal>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }
