@@ -1,7 +1,25 @@
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Nasfaq.JSON
 {
     public static class Coins
     {
+        static Coins()
+        {
+            List<string> allCoins = new List<string>();
+            foreach(FieldInfo field in typeof(Coins).GetFields(BindingFlags.Static | BindingFlags.Public))
+            {
+                string name = (string)field.GetValue(null);    
+                if(name != Blank)
+                {
+                    allCoins.Add(name);
+                }
+            }
+            CoinsList = allCoins;
+        }
+
+        public static readonly IReadOnlyList<string> CoinsList;
         public static readonly string Blank = "blank";
 
         public static readonly string Hololive = "hololive";

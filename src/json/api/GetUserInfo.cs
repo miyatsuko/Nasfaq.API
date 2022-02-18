@@ -16,8 +16,12 @@ namespace Nasfaq.JSON
         public bool admin { get; set; }
         public UserInfo_Settings settings { get; set; }
         public string color { get; set; }
+        public string hat { get; set; }
         public UserInfo_Muted muted { get; set; }
         public Dictionary<string, UserInfo_Item[]> items { get; set; }
+        public double taxCredits { get; set; }
+        public bool isBookie { get; set; }
+        public double brokerFeeTotal { get; set; }
     }
 
     //api/updateSettings
