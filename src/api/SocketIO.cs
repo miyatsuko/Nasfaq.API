@@ -34,6 +34,7 @@ namespace Nasfaq.API
 
         public event Action OnOpen;
         public event Action<byte[]> OnMessage;
+        public event Action<IWebsocketData> OnWebsocketData;
         public event Action<string> OnError;
 
         static readonly List<(string, string)> headers = new List<(string, string)>
@@ -92,6 +93,12 @@ namespace Nasfaq.API
             }
         }
 
+        public bool IsOpen()
+        {
+            if(ws == null) return false;
+            return ws.IsAlive;
+        }
+
         public async Task ConnectAsync(HttpClient client, string userId = null, string cookies = null)
         {
             //open packet
@@ -119,7 +126,7 @@ namespace Nasfaq.API
 
             ws = new WebSocket($"{wsUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=websocket&sid={socketSID.sid}");
             ws.OnOpen += (sender, e) => { OnOpen?.Invoke(); };
-            ws.OnMessage += (sender, e) => { OnMessageWrap(e, ws, OnMessage); };
+            ws.OnMessage += (sender, e) => { OnMessageWrap(e, ws, OnMessage, OnWebsocketData); };
             ws.OnError += (StringReader, e) => { OnError?.Invoke(e.Message); };
             ws.Connect();
             ws.Send("2probe"); //send probe
@@ -134,7 +141,7 @@ namespace Nasfaq.API
             }
         }
 
-        private static void OnMessageWrap(MessageEventArgs e, WebSocket ws, Action<byte[]> OnMessage)
+        private static void OnMessageWrap(MessageEventArgs e, WebSocket ws, Action<byte[]> OnMessage, Action<IWebsocketData> OnWebsocketData)
         {
             try
             {
@@ -153,8 +160,9 @@ namespace Nasfaq.API
                         switch(e.Data[1])
                         {
                             case '2': //event
-
-                                OnMessage?.Invoke(e.RawData.SubArray(2, e.RawData.Length - 2));
+                                byte[] bytes = e.RawData.SubArray(2, e.RawData.Length - 2);
+                                OnMessage?.Invoke(bytes);
+                                OnWebsocketData?.Invoke(BytesToSocketData(bytes));
                                 break;
                             default:
                                 throw new InvalidDataException("SocketIO: Unhandled Message: " + e.Data);

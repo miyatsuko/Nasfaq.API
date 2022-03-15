@@ -11,9 +11,21 @@ namespace Nasfaq.API
 {
     public class NasfaqAPI : IDisposable
     {
+        public const int MAX_MULTICOIN = 10;
+        public const int CYLCES_BETWEEN_ADJUSTMENTS = 24 * 6;
+        public const int CYCLE_LENGTH_IN_SECONDS = 600;
+        public static readonly string SERVER_TIMEZONE = "America/New_York";
+
+        static NasfaqAPI()
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                SERVER_TIMEZONE = "Eastern Standard Time";
+        }
+
         HttpClient httpClient;
         SocketIO mainSocket;
         string holosesh;
+        readonly List<(string, string)> headers;
 
         public event Action SocketOnOpen
         {
@@ -27,13 +39,17 @@ namespace Nasfaq.API
             remove => mainSocket.OnMessage -= value;
         }
 
+        public event Action<IWebsocketData> SocketOnWebsocketData
+        {
+            add => mainSocket.OnWebsocketData += value;
+            remove => mainSocket.OnWebsocketData -= value;
+        }
+
         public event Action<string> SocketOnError
         {
             add => mainSocket.OnError += value;
             remove => mainSocket.OnError -= value;
         }
-
-        readonly List<(string, string)> headers;
         
         public NasfaqAPI(string holosesh = null)
         {
@@ -91,6 +107,12 @@ namespace Nasfaq.API
         public void CloseSocketAsync()
         {
             mainSocket.DisconnectAsync();
+        }
+
+        public bool IsSocketOpen()
+        {
+            if(mainSocket == null) return false;
+            return mainSocket.IsOpen();
         }
 
         public async Task<string> AddMessage(AddMessage data)

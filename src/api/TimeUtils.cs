@@ -5,6 +5,8 @@ namespace Nasfaq.API
 {
     public static class TimeUtils
     {
+        
+
         public static long Get(int year, int month, int day, int minutes = 0, int seconds = 0, int milliseconds = 0)
         {
             return new DateTimeOffset(new DateTime(year, month, day, minutes, seconds, milliseconds)).ToUnixTimeMilliseconds();
@@ -26,6 +28,25 @@ namespace Nasfaq.API
         public static long GetCurrent()
         {
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        public static int CyclesUntilDividends(long timestamp)
+        {
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(7);
+            return (int)((nasfaqCycleTime - nasfaqTimeNow).TotalSeconds / NasfaqAPI.CYCLE_LENGTH_IN_SECONDS);
+        }
+
+        public static int CyclesUntilAdjustement(long timestamp)
+        {
+
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(9).AddMinutes(5);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
+            return (int)((nasfaqCycleTime - nasfaqTimeNow).TotalSeconds / NasfaqAPI.CYCLE_LENGTH_IN_SECONDS);
         }
     }
 }
