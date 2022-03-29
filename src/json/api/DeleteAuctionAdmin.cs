@@ -1,4 +1,4 @@
-namespace Nasfaq.API
+namespace Nasfaq.JSON
 {
     //api/deleteAuctionAdmin
     public class DeleteAuctionAdmin

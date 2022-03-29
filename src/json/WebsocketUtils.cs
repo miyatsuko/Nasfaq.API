@@ -17,7 +17,7 @@ namespace Nasfaq.JSON
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine($"Exception: {e.Message} for message {content}");
                 File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
                 return null;
             }
@@ -36,7 +36,7 @@ namespace Nasfaq.JSON
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine($"Exception: {e.Message} for message {content}");
                 File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
                 return null;
             }
@@ -77,10 +77,15 @@ namespace Nasfaq.JSON
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }
+            catch(KeyNotFoundException k)
+            {
+                Console.WriteLine(k.Message);
+                File.AppendAllText("websocketerrors.txt", k.Message + "\n\n\n\n");
+            }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
-                File.AppendAllText("websocketerrors.txt", e.Message + "\n\n\n\n");
+                Console.WriteLine($"Exception: {e.Message} for message {content}");
+                File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
             }
             return null;
         }

@@ -99,9 +99,9 @@ namespace Nasfaq.API
             httpClient?.Dispose();
         }
         
-        public async Task OpenSocketAsync(string userId = null)
+        public async Task OpenSocketAsync(string userId = null, string socketId = null)
         {
-            await mainSocket.ConnectAsync(httpClient, userId);
+            await mainSocket.ConnectAsync(httpClient, userId, socketId);
         }
 
         public void CloseSocketAsync()

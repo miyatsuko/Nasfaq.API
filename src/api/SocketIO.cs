@@ -99,12 +99,15 @@ namespace Nasfaq.API
             return ws.IsAlive;
         }
 
-        public async Task ConnectAsync(HttpClient client, string userId = null, string cookies = null)
+        public async Task ConnectAsync(HttpClient client, string userId, string socketId, string cookies = null)
         {
+            string user = (userId != null) ? $"user={userId}&" : "";
+            string socketid = (socketId != null) ? $"socketid={socketId}&" : "";
+
             //open packet
             string socketSIDjson = await HttpHelper.GET(
                 client,
-                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}", 
+                $"{restUrl}?{user}{socketid}EIO=4&transport=polling&t={Yeast.GetTimestamp()}", 
                 headers,
                 cookies);
             GetSocketIOSID socketSID = JsonSerializer.Deserialize<GetSocketIOSID>(socketSIDjson.Substring(1));
@@ -112,7 +115,7 @@ namespace Nasfaq.API
             //namespace connection request
             string response2 = await HttpHelper.POST(
                 client,
-                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
+                $"{restUrl}?{user}{socketid}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
                 headers, 
                 "40",
                 cookies);
@@ -120,11 +123,11 @@ namespace Nasfaq.API
             //namespace connection approval
             string response3 = await HttpHelper.GET(
                 client,
-                $"{restUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
+                $"{restUrl}?{user}{socketid}EIO=4&transport=polling&t={Yeast.GetTimestamp()}&sid={socketSID.sid}", 
                 headers,
                 cookies);
 
-            ws = new WebSocket($"{wsUrl}?{(userId != null ? $"user={userId}&" : "")}EIO=4&transport=websocket&sid={socketSID.sid}");
+            ws = new WebSocket($"{wsUrl}?{user}{socketid}EIO=4&transport=websocket&sid={socketSID.sid}");
             ws.OnOpen += (sender, e) => { OnOpen?.Invoke(); };
             ws.OnMessage += (sender, e) => { OnMessageWrap(e, ws, OnMessage, OnWebsocketData); };
             ws.OnError += (StringReader, e) => { OnError?.Invoke(e.Message); };

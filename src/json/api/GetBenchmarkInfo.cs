@@ -23,6 +23,6 @@ namespace Nasfaq.JSON
         public double index { get; set; }
         public double marketCap { get; set; }
         public int totalShares { get; set; }
-        public int timestamp { get; set; }
+        public long timestamp { get; set; }
     }
 }
