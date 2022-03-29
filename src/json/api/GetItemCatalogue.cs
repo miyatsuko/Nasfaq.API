@@ -13,5 +13,6 @@ namespace Nasfaq.JSON
         public string description { get; set; }
         public string modifier { get; set; }
         public double modifierMult { get; set; }
+        public bool tradeable { get; set; }
     }
 }

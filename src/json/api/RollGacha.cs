@@ -8,11 +8,14 @@ namespace Nasfaq.JSON
             
         }
         
-        public RollGacha(bool bulk)
+        public RollGacha(int bulk)
         {
             this.bulk = bulk;
         }
 
-        public bool bulk { get; set; }
+        // 0 -> 1 roll, $1000
+        // 1 -> 10 rolls, $10000
+        // 2 -> 100 rolls, $100000
+        public int bulk { get; set; }
     }
 }

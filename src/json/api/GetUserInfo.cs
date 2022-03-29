@@ -21,6 +21,10 @@ namespace Nasfaq.JSON
         public Dictionary<string, UserInfo_Item[]> items { get; set; }
         public double taxCredits { get; set; }
         public bool isBookie { get; set; }
+        public string[] usersBlocking { get; set; }
+        public string[] usersBlockedBy { get; set; }
+        public UserInfo_DirectMessages[] directMessages { get; set; }
+        public string socketid { get; set; }
         public double brokerFeeTotal { get; set; }
     }
 
@@ -49,5 +53,16 @@ namespace Nasfaq.JSON
         public long acquiredTimestamp { get; set; }
         public double lastPurchasePrice { get; set; }
         public int quantity { get; set; }
+    }
+
+    public class UserInfo_DirectMessages
+    {
+        public string roomid { get; set; }
+        public string user1 { get; set; }
+        public string user2 { get; set; }
+        public string user1name { get; set; }
+        public string user2name { get; set; }
+        public string preview { get; set; }
+        public long timestamp { get; set; }
     }
 }

@@ -115,9 +115,69 @@ namespace Nasfaq.API
             return mainSocket.IsOpen();
         }
 
-        public async Task<string> AddMessage(AddMessage data)
+        public async Task<NasfaqResponse> AddChatBlock(AddChatBlock data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/addChatBlock",
+                headers,
+                JsonSerializer.Serialize<AddChatBlock>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> AddChatBlock(string blockedPlayer)
+        {
+            return await AddChatBlock(new AddChatBlock(blockedPlayer));
+        }
+
+        public async Task<NasfaqResponse> AddChatDM(AddChatDM data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/addChatDM",
+                headers,
+                JsonSerializer.Serialize<AddChatDM>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> AddChatDM(string message, string receiver_id)
+        {
+            return await AddChatDM(new AddChatDM(message, receiver_id));
+        }
+
+        public async Task<NasfaqResponse> AddChatGlobal(AddChatGlobal data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/addChatGlobal",
+                headers,
+                JsonSerializer.Serialize<AddChatGlobal>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> AddChatGlobal(string message, bool anonymous)
+        {
+            return await AddChatGlobal(new AddChatGlobal(message, anonymous));
+        }
+
+        public async Task<NasfaqResponse> AddChatReport(AddChatReport data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/addChatReport",
+                headers,
+                JsonSerializer.Serialize<AddChatReport>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> AddChatReport(string messageid)
+        {
+            return await AddChatReport(new AddChatReport(messageid));
+        }
+
+        public async Task<NasfaqResponse> AddMessage(AddMessage data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
                 "https://nasfaq.biz/api/addMessage",
                 headers,
@@ -125,14 +185,14 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<string> AddMessage(string room, string text)
+        public async Task<NasfaqResponse> AddMessage(string room, string text)
         {
             return await AddMessage(new AddMessage(room, text));
         }
 
-        public async Task<string> AddReport(AddReport data)
+        public async Task<NasfaqResponse> AddReport(AddReport data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
                 "https://nasfaq.biz/api/addReport",
                 headers,
@@ -140,14 +200,14 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<string> AddReport(int id, string roomId, string text, long timestamp, string username)
+        public async Task<NasfaqResponse> AddReport(int id, string roomId, string text, long timestamp, string username)
         {
             return await AddReport(new AddReport(id, roomId, text, timestamp, username));
         }
 
-        public async Task<string> AddRoom(AddRoom data)
+        public async Task<NasfaqResponse> AddRoom(AddRoom data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
                 "https://nasfaq.biz/api/addRoom",
                 headers,
@@ -155,9 +215,24 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<string> AddRoom(string subject, string openingText)
+        public async Task<NasfaqResponse> AddRoom(string subject, string openingText)
         {
             return await AddRoom(new AddRoom(subject, openingText));
+        }
+
+        public async Task<NasfaqResponse> ArchiveBettingPool(ArchiveBettingPool data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/archiveBettingPool",
+                headers,
+                JsonSerializer.Serialize<ArchiveBettingPool>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> ArchiveBettingPool(string poolid)
+        {
+            return await ArchiveBettingPool(new ArchiveBettingPool(poolid));
         }
 
         public async Task<string> BuySuperchat(BuySuperchat data)
@@ -205,160 +280,89 @@ namespace Nasfaq.API
             return await ChangeUsername(new ChangeUsername(username));
         }
 
-        public async Task<CraftItem_Response> CraftItem(string[] items)
+        public async Task<NasfaqResponse> CraftItem(string[] items)
         {
-            return await HttpHelper.POST<CraftItem_Response>(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
                 "https://nasfaq.biz/api/craftItem",
                 headers,
-                JsonSerializer.Serialize<CraftItem_Request>(new CraftItem_Request() { items = items})
+                JsonSerializer.Serialize<CraftItem>(new CraftItem() { items = items})
             );
         }
 
-        public async Task<string> RollGacha(RollGacha data)
+        public async Task<NasfaqResponse> CreateBettingPool(CreateBettingPool data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
-                "https://nasfaq.biz/api/rollGacha",
+                "https://nasfaq.biz/api/createBettingPool",
                 headers,
-                JsonSerializer.Serialize<RollGacha>(data)
+                JsonSerializer.Serialize<CreateBettingPool>(data)
             );
         }
 
-        public async Task<string> RollGacha(bool bulk)
+        public async Task<NasfaqResponse> CreateBettingPool(string topic, string[] options, long closingTime)
         {
-            return await RollGacha(new RollGacha(bulk));
+            return await CreateBettingPool(new CreateBettingPool(topic, options, closingTime));
         }
 
-        public async Task<string> SetIcon(SetIcon data)
+        public async Task<NasfaqResponse> CreateDM(CreateDM data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
-                "https://nasfaq.biz/api/setIcon",
+                "https://nasfaq.biz/api/createDM",
                 headers,
-                JsonSerializer.Serialize<SetIcon>(data)
+                JsonSerializer.Serialize<CreateDM>(data)
             );
         }
 
-        public async Task<string> SetIcon(string icon)
+        public async Task<NasfaqResponse> CreateDM(string message, string receiver_username)
         {
-            return await SetIcon(new SetIcon(icon));
+            return await CreateDM(new CreateDM(message, receiver_username));
         }
 
-        public async Task<string> SetUserLeaderboardColor(SetUserLeaderboardColor data)
+        public async Task<NasfaqResponse> DeleteAuctionAdmin(DeleteAuctionAdmin data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
-                "https://nasfaq.biz/api/setUserLeaderboardColor",
+                "https://nasfaq.biz/api/deleteAuctionAdmin",
                 headers,
-                JsonSerializer.Serialize<SetUserLeaderboardColor>(data)
+                JsonSerializer.Serialize<DeleteAuctionAdmin>(data)
             );
         }
 
-        public async Task<string> SetUserLeaderboardColor(string color)
+        public async Task<NasfaqResponse> DeleteAuctionAdmin(string auctionid)
         {
-            return await SetUserLeaderboardColor(new SetUserLeaderboardColor(color));
+            return await DeleteAuctionAdmin(new DeleteAuctionAdmin(auctionid));
         }
-        
-        
-        public async Task<string> Trade(Trade data)
+
+        public async Task<NasfaqResponse> DeleteBettingPool(DeleteBettingPool data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
-                "https://nasfaq.biz/api/trade",
+                "https://nasfaq.biz/api/deleteBettingPool",
                 headers,
-                JsonSerializer.Serialize<Trade>(data)
+                JsonSerializer.Serialize<DeleteBettingPool>(data)
             );
         }
 
-        public async Task<string> Trade(string coin, TradeType type)
+        public async Task<NasfaqResponse> DeleteBettingPool(string poolid)
         {
-            return await Trade(new Trade(coin, type));
+            return await DeleteBettingPool(new DeleteBettingPool(poolid));
         }
 
-        public async Task<string> Trade(string coin, int quantity, TradeType type)
+        public async Task<NasfaqResponse> DeleteOwnAccount(DeleteOwnAccount data)
         {
-            return await Trade(new Trade(coin, quantity, type));
-        }
-
-        public async Task<string> Trade(string[] buys, string[] sells)
-        {
-            return await Trade(new Trade(buys, sells));
-        }
-
-        public async Task<string> Trade((string, int)[] buys, (string, int)[] sells)
-        {
-            return await Trade(new Trade(buys, sells));
-        }
-
-        public async Task<string> Trade(Trade_Coin[] orders)
-        {
-            return await Trade(new Trade(orders));
-        }
-
-        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(string auctionId, double bid, string item)
-        {
-            return await PlaceAuctionBid(new PlaceAuctionBid_Request(auctionId, bid, item));
-        }
-
-        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(PlaceAuctionBid_Request bid)
-        {
-            return await HttpHelper.POST<PlaceAuctionBid_Response>(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
-                "https://nasfaq.biz/api/placeAuctionBid",
+                "https://nasfaq.biz/api/deleteOwnAccount",
                 headers,
-                JsonSerializer.Serialize<PlaceAuctionBid_Request>(bid)
+                JsonSerializer.Serialize<DeleteOwnAccount>(data)
             );
         }
 
-        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(string auctionId, string item)
+        public async Task<NasfaqResponse> DeleteOwnAccount(string password)
         {
-            return await PlaceAuctionCancel(new PlaceAuctionCancel_Request(auctionId, item));
-        }
-
-        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(PlaceAuctionCancel_Request cancel)
-        {
-            return await HttpHelper.POST<PlaceAuctionCancel_Response>(
-                httpClient,
-                "https://nasfaq.biz/api/placeAuctionCancel",
-                headers,
-                JsonSerializer.Serialize<PlaceAuctionCancel_Request>(cancel)
-            );
-        }
-
-        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, string expiration, string item, double minimumBid)
-        {
-            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, expiration, item, minimumBid));
-        }
-
-        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, int hours, int minutes, string item, double minimumBid)
-        {
-            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, TimeUtils.GetAuctionString(hours, minutes), item, minimumBid));
-        }
-
-        public async Task<PlaceAuctionSell_Response> PlaceAuctionSell(PlaceAuctionSell_Request sell)
-        {
-            return await HttpHelper.POST<PlaceAuctionSell_Response>(
-                httpClient,
-                "https://nasfaq.biz/api/placeAuctionSell",
-                headers,
-                JsonSerializer.Serialize<PlaceAuctionSell_Request>(sell)
-            );
-        }
-
-        public async Task<SendAuctionMessage_Response> SendAuctionMessage(string auctionId, string message)
-        {
-            return await SendAuctionMessage(new SendAuctionMessage_Request(auctionId, message));
-        }
-
-        public async Task<SendAuctionMessage_Response> SendAuctionMessage(SendAuctionMessage_Request message)
-        {
-            return await HttpHelper.POST<SendAuctionMessage_Response>(
-                httpClient,
-                "https://nasfaq.biz/api/sendAuctionMessage",
-                headers,
-                JsonSerializer.Serialize<SendAuctionMessage_Request>(message)
-            );
+            return await DeleteOwnAccount(new DeleteOwnAccount(password));
         }
 
         public async Task<DestroySession> DestroySession()
@@ -366,6 +370,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<DestroySession>(
                 httpClient,
                 "https://nasfaq.biz/api/destroySession",
+                headers
+            );
+        }
+
+        public async Task<GetAdmins> GetAdmins()
+        {
+            return await HttpHelper.GET<GetAdmins>(
+                httpClient,
+                "https://nasfaq.biz/api/getAdmins",
                 headers
             );
         }
@@ -379,11 +392,56 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<GetAuctionCurrent> GetAuctionCurrent()
+        {
+            return await HttpHelper.GET<GetAuctionCurrent>(
+                httpClient,
+                "https://nasfaq.biz/api/getAuctionCurrent",
+                headers
+            );
+        }
+
         public async Task<GetAuctionFeed> GetAuctionFeed(string auctionId)
         {
             return await HttpHelper.GET<GetAuctionFeed>(
                 httpClient,
                 $"https://nasfaq.biz/api/getAuctionFeed?auctionid={auctionId}",
+                headers
+            );
+        }
+
+        public async Task<GetAuctionHistory> GetAuctionHistory()
+        {
+            return await HttpHelper.GET<GetAuctionHistory>(
+                httpClient,
+                $"https://nasfaq.biz/api/getAuctionHistory",
+                headers
+            );
+        }
+
+        public async Task<GetBenchmarkInfo> GetBenchmarkInfo()
+        {
+            return await HttpHelper.GET<GetBenchmarkInfo>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBenchmarkInfo",
+                headers
+            );
+        }
+
+        public async Task<GetBenchmarkLeaderboard> GetBenchmarkLeaderboard()
+        {
+            return await HttpHelper.GET<GetBenchmarkLeaderboard>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBenchmarkLeaderboard",
+                headers
+            );
+        }
+
+        public async Task<GetBettingPools> GetBettingPools()
+        {
+            return await HttpHelper.GET<GetBettingPools>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBettingPools",
                 headers
             );
         }
@@ -402,6 +460,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<GetCooldown>(
                 httpClient,
                 "https://nasfaq.biz/api/getCooldown",
+                headers
+            );
+        }
+
+        public async Task<GetDirectMessages> GetDirectMessages(string roomid)
+        {
+            return await HttpHelper.GET<GetDirectMessages>(
+                httpClient,
+                $"https://nasfaq.biz/api/getDirectMessages?roomid={roomid}",
                 headers
             );
         }
@@ -433,6 +500,15 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<GetGlobalChat> GetGlobalChat()
+        {
+            return await HttpHelper.GET<GetGlobalChat>(
+                httpClient,
+                "https://nasfaq.biz/api/getGlobalChat",
+                headers
+            );
+        }
+
         public async Task<GetHistory> GetHistory(bool fullHistory, long timestamp = default)
         {
             string param = "";
@@ -454,6 +530,15 @@ namespace Nasfaq.API
             return await HttpHelper.GET<GetItemCatalogue>(
                 httpClient,
                 "https://nasfaq.biz/api/getCatalogue",
+                headers
+            );
+        }
+
+        public async Task<GetItemMarketPrices> GetItemMarketPrices()
+        {
+            return await HttpHelper.GET<GetItemMarketPrices>(
+                httpClient,
+                "https://nasfaq.biz/api/getItemMarketPrices",
                 headers
             );
         }
@@ -652,8 +737,45 @@ namespace Nasfaq.API
             getUserInfo.admin = root.GetProperty("admin").GetBoolean();
             getUserInfo.settings = JsonSerializer.Deserialize<UserInfo_Settings>(root.GetProperty("settings").GetString());
             getUserInfo.color = root.GetProperty("color").GetString();
+            getUserInfo.hat = root.GetProperty("hat").GetString();
             getUserInfo.muted = JsonSerializer.Deserialize<UserInfo_Muted>(root.GetProperty("muted").GetString());
             getUserInfo.items = JsonSerializer.Deserialize<Dictionary<string, UserInfo_Item[]>>(root.GetProperty("items").GetString());
+            getUserInfo.taxCredits = root.GetProperty("taxCredits").GetDouble();
+            {
+                JsonElement usersBlockingArray = root.GetProperty("usersBlocking");
+                getUserInfo.usersBlocking = new string[usersBlockingArray.GetArrayLength()];
+                for(int i = 0; i < getUserInfo.usersBlocking.Length; i++)
+                {
+                    getUserInfo.usersBlocking[i] = usersBlockingArray[i].GetString();
+                }
+            }
+            {
+                JsonElement usersBlockedArray = root.GetProperty("usersBlockedBy");
+                getUserInfo.usersBlockedBy = new string[usersBlockedArray.GetArrayLength()];
+                for(int i = 0; i < getUserInfo.usersBlockedBy.Length; i++)
+                {
+                    getUserInfo.usersBlockedBy[i] = usersBlockedArray[i].GetString();
+                }
+            }
+            {
+                JsonElement dmArray = root.GetProperty("directMessages");
+                getUserInfo.directMessages = new UserInfo_DirectMessages[dmArray.GetArrayLength()];
+                for(int i = 0; i < getUserInfo.directMessages.Length; i++)
+                {
+                    getUserInfo.directMessages[i] = new UserInfo_DirectMessages()
+                    {
+                        roomid = dmArray[i].GetProperty("roomid").GetString(),
+                        user1 = dmArray[i].GetProperty("user1").GetString(),
+                        user2 = dmArray[i].GetProperty("user2").GetString(),
+                        user1name = dmArray[i].GetProperty("user1name").GetString(),
+                        user2name = dmArray[i].GetProperty("user2name").GetString(),
+                        preview = dmArray[i].GetProperty("preview").GetString(),
+                        timestamp = dmArray[i].GetProperty("timestamp").GetInt64()
+                    };
+                }
+            }
+            getUserInfo.socketid = root.GetProperty("socketid").GetString();
+            getUserInfo.brokerFeeTotal = root.GetProperty("brokerFeeTotal").GetDouble();
             return getUserInfo;
         }
 
@@ -673,6 +795,256 @@ namespace Nasfaq.API
                 $"https://nasfaq.biz/api/getUserWallet?userid={userid}",
                 headers
             );
+        }
+
+        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(string auctionId, double bid, string item)
+        {
+            return await PlaceAuctionBid(new PlaceAuctionBid_Request(auctionId, bid, item));
+        }
+
+        public async Task<PlaceAuctionBid_Response> PlaceAuctionBid(PlaceAuctionBid_Request bid)
+        {
+            return await HttpHelper.POST<PlaceAuctionBid_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionBid",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionBid_Request>(bid)
+            );
+        }
+
+        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(string auctionId, string item)
+        {
+            return await PlaceAuctionCancel(new PlaceAuctionCancel_Request(auctionId, item));
+        }
+
+        public async Task<PlaceAuctionCancel_Response> PlaceAuctionCancel(PlaceAuctionCancel_Request cancel)
+        {
+            return await HttpHelper.POST<PlaceAuctionCancel_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionCancel",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionCancel_Request>(cancel)
+            );
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, string expiration, string item, double minimumBid)
+        {
+            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, expiration, item, minimumBid));
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionCancel(int amount, int hours, int minutes, string item, double minimumBid)
+        {
+            return await PlaceAuctionSell(new PlaceAuctionSell_Request(amount, TimeUtils.GetAuctionString(hours, minutes), item, minimumBid));
+        }
+
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionSell(PlaceAuctionSell_Request sell)
+        {
+            return await HttpHelper.POST<PlaceAuctionSell_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionSell",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionSell_Request>(sell)
+            );
+        }
+
+        public async Task<NasfaqResponse> PlaceBet(PlaceBet data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/placeBet",
+                headers,
+                JsonSerializer.Serialize<PlaceBet>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> PlaceBet(string poolid, double betAmount, int option)
+        {
+            return await PlaceBet(new PlaceBet(poolid, betAmount, option));
+        }
+
+        public async Task<NasfaqResponse> RefundBets(RefundBets data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/refundBets",
+                headers,
+                JsonSerializer.Serialize<RefundBets>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> RefundBets(string poolid)
+        {
+            return await RefundBets(new RefundBets(poolid));
+        }
+
+        public async Task<NasfaqResponse> RemoveChatBlock(RemoveChatBlock data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/removeChatBlock",
+                headers,
+                JsonSerializer.Serialize<RemoveChatBlock>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> RemoveChatBlock(string blocked)
+        {
+            return await RemoveChatBlock(new RemoveChatBlock(blocked));
+        }
+
+        public async Task<string> RollGacha(RollGacha data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/rollGacha",
+                headers,
+                JsonSerializer.Serialize<RollGacha>(data)
+            );
+        }
+
+        public async Task<string> RollGacha(int bulk)
+        {
+            return await RollGacha(new RollGacha(bulk));
+        }
+
+        public async Task<SendAuctionMessage_Response> SendAuctionMessage(SendAuctionMessage_Request message)
+        {
+            return await HttpHelper.POST<SendAuctionMessage_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/sendAuctionMessage",
+                headers,
+                JsonSerializer.Serialize<SendAuctionMessage_Request>(message)
+            );
+        }
+
+        public async Task<SendAuctionMessage_Response> SendAuctionMessage(string auctionId, string message)
+        {
+            return await SendAuctionMessage(new SendAuctionMessage_Request(auctionId, message));
+        }
+
+        public async Task<NasfaqResponse> SetBettingPoolOptionStatus(SetBettingPoolOptionStatus message)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/setBettingPoolOpenStatus",
+                headers,
+                JsonSerializer.Serialize<SetBettingPoolOptionStatus>(message)
+            );
+        }
+
+        public async Task<NasfaqResponse> SetBettingPoolOptionStatus(string poolid, bool openStatus)
+        {
+            return await SetBettingPoolOptionStatus(new SetBettingPoolOptionStatus(poolid, openStatus));
+        }
+
+        public async Task<NasfaqResponse> SetBettingPoolWinner(SetBettingPoolWinner message)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/setBettingPoolWinner",
+                headers,
+                JsonSerializer.Serialize<SetBettingPoolWinner>(message)
+            );
+        }
+
+        public async Task<NasfaqResponse> SetBettingPoolWinner(string poolid, int winOption)
+        {
+            return await SetBettingPoolWinner(new SetBettingPoolWinner(poolid, winOption));
+        }
+
+        public async Task<string> SetIcon(SetIcon data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/setIcon",
+                headers,
+                JsonSerializer.Serialize<SetIcon>(data)
+            );
+        }
+
+        public async Task<string> SetIcon(string icon)
+        {
+            return await SetIcon(new SetIcon(icon));
+        }
+
+        public async Task<string> SetUserLeaderboardColor(SetUserLeaderboardColor data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/setUserLeaderboardColor",
+                headers,
+                JsonSerializer.Serialize<SetUserLeaderboardColor>(data)
+            );
+        }
+
+        public async Task<string> SetUserLeaderboardColor(string color)
+        {
+            return await SetUserLeaderboardColor(new SetUserLeaderboardColor(color));
+        }
+        
+        public async Task<string> SetUserLeaderboardHat(SetUserLeaderboardHat data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/setUserLeaderboardHat",
+                headers,
+                JsonSerializer.Serialize<SetUserLeaderboardHat>(data)
+            );
+        }
+
+        public async Task<string> SetUserLeaderboardHat(string hat)
+        {
+            return await SetUserLeaderboardHat(new SetUserLeaderboardHat(hat));
+        }
+        
+        public async Task<string> Trade(Trade data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/trade",
+                headers,
+                JsonSerializer.Serialize<Trade>(data)
+            );
+        }
+
+        public async Task<string> Trade(string coin, TradeType type)
+        {
+            return await Trade(new Trade(coin, type));
+        }
+
+        public async Task<string> Trade(string coin, int quantity, TradeType type)
+        {
+            return await Trade(new Trade(coin, quantity, type));
+        }
+
+        public async Task<string> Trade(string[] buys, string[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade((string, int)[] buys, (string, int)[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade(Trade_Coin[] orders)
+        {
+            return await Trade(new Trade(orders));
+        }
+        
+        public async Task<NasfaqResponse> VerifyEmail(VerifyEmail data)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/verifyEmail",
+                headers,
+                JsonSerializer.Serialize<VerifyEmail>(data)
+            );
+        }
+
+        public async Task<NasfaqResponse> VerifyEmail(string userid, string key)
+        {
+            return await VerifyEmail(new VerifyEmail(userid, key));
         }
     }
 }

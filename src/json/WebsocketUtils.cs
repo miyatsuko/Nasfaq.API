@@ -10,15 +10,36 @@ namespace Nasfaq.JSON
     {
         public static string ReadEventName(string content)
         {
-            JsonDocument jsonDocument = JsonDocument.Parse(content);
-            return jsonDocument.RootElement[0].GetString();
+            try
+            {
+                JsonDocument jsonDocument = JsonDocument.Parse(content);
+                return jsonDocument.RootElement[0].GetString();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
+                return null;
+            }
         }
 
         public static IWebsocketData Read(string content)
         {
-            JsonDocument jsonDocument = JsonDocument.Parse(content);
-            string websocketName = jsonDocument.RootElement[0].GetString();
-            JsonElement jsonElement = jsonDocument.RootElement[1];
+            JsonDocument jsonDocument = default;
+            string websocketName = default;
+            JsonElement jsonElement = default;
+            try
+            {
+                jsonDocument = JsonDocument.Parse(content);
+                websocketName = jsonDocument.RootElement[0].GetString();
+                jsonElement = jsonDocument.RootElement[1];
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
+                return null;
+            }
 
             try
             {
@@ -42,6 +63,17 @@ namespace Nasfaq.JSON
                     case "auctionUpdate": return ReadStandard<WSAuctionUpdate>(jsonElement);
                     case "auctionFeed": return ReadStandard<WSAuctionFeed>(jsonElement);
                     case "addMessageGlobal": return ReadStandard<WSAddMessageGlobal>(jsonElement);
+                    case "benchmarkUpdate": return ReadStandard<WSBenchmarkUpdate>(jsonElement);
+                    case "benchmarkHistoryUpdate": return ReadStandard<WSBenchmarkHistoryUpdate>(jsonElement);
+                    case "distributeBettingPool": return ReadStandard<WSDistributeBettingPool>(jsonElement);
+                    case "userBetUpdate": return ReadStandard<WSUserBetUpdate>(jsonElement);
+                    case "bettingPoolUpdate": return ReadStandard<WSBettingPoolUpdate>(jsonElement);
+                    case "historyRefresh": return ReadStandard<WSHistoryRefresh>(jsonElement);
+                    case "bettingPoolOpen": return ReadStandard<WSBettingPoolOpen>(jsonElement);
+                    case "poolRefunded": return ReadStandard<WSPoolRefunded>(jsonElement);
+                    case "bettingPoolDeleted": return ReadStandard<WSBettingPoolDeleted>(jsonElement);
+                    case "bettingPoolArchived": return ReadStandard<WSBettingPoolArchived>(jsonElement);
+                    case "benchmarkLeaderboardUpdate": return ReadStandard<WSBenchmarkLeaderboardUpdate>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }

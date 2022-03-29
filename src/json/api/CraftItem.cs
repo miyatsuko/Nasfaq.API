@@ -1,14 +1,15 @@
 
-namespace Nasfaq.API
+namespace Nasfaq.JSON
 {
-    public class CraftItem_Request
+    //api/craftItem
+    public class CraftItem
     {
-        public string[] items { get; set; }
-    }
+        public CraftItem(){}
+        public CraftItem(string[] items)
+        {
+            this.items = items;
+        }
 
-    public class CraftItem_Response
-    {
-        public bool success { get; set; }
-        public string message { get; set; }
+        public string[] items { get; set; }
     }
 }
