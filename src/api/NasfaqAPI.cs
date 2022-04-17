@@ -374,6 +374,26 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<NasfaqResponse> FindEgg(FindEgg egg)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/findEgg",
+                headers,
+                JsonSerializer.Serialize(egg)
+            );
+        }
+
+        public async Task<NasfaqResponse> FindEgg(string eggid)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/findEgg",
+                headers,
+                JsonSerializer.Serialize(new FindEgg(eggid))
+            );
+        }
+
         public async Task<GetAdmins> GetAdmins()
         {
             return await HttpHelper.GET<GetAdmins>(
