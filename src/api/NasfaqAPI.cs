@@ -715,6 +715,15 @@ namespace Nasfaq.API
             );
         }
 
+        public async Task<GetUserAutoTraderRules> GetUserAutoTraderRules()
+        {
+            return await HttpHelper.GET<GetUserAutoTraderRules>(
+                httpClient,
+                "https://nasfaq.biz/api/getUserAutoTraderRules",
+                headers
+            );
+        } 
+
         public async Task<GetUserInfo> GetUserInfo()
         {
             string json = await HttpHelper.GET(
@@ -1016,6 +1025,21 @@ namespace Nasfaq.API
         {
             return await SetUserLeaderboardHat(new SetUserLeaderboardHat(hat));
         }
+
+        public async Task<string> ToggleAutoTrader(ToggleAutoTrader data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/toggleAutoTrader",
+                headers,
+                JsonSerializer.Serialize<ToggleAutoTrader>(data)
+            );
+        }
+
+        public async Task<string> ToggleAutoTrader(bool active)
+        {
+            return await ToggleAutoTrader(new ToggleAutoTrader(active));
+        }
         
         public async Task<string> Trade(Trade data)
         {
@@ -1060,6 +1084,21 @@ namespace Nasfaq.API
                 headers,
                 JsonSerializer.Serialize<VerifyEmail>(data)
             );
+        }
+
+        public async Task<string> UpdateAutoTraderRules(UpdateAutoTraderRules data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/updateAutoTraderRules",
+                headers,
+                JsonSerializer.Serialize<UpdateAutoTraderRules>(data)
+            );
+        }
+
+        public async Task<string> UpdateAutoTraderRules(UserAutoTraderRules_Rule[] rules)
+        {
+            return await UpdateAutoTraderRules(new UpdateAutoTraderRules(rules));
         }
 
         public async Task<NasfaqResponse> VerifyEmail(string userid, string key)
