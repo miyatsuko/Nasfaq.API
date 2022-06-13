@@ -29,6 +29,10 @@ namespace Nasfaq.JSON
         public bool walletIsPublic { get; set; }
         public bool hasItems { get; set; }
         public string color { get; set; }
+        public string hat { get; set; }
+        public string[] valentines { get; set; }
+        public bool inCouple { get; set; }
+        public bool active { get; set; }
     }
 
     public class Oshiboard
