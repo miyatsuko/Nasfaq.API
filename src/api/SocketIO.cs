@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using WebSocketSharp;
 using System.Collections.Generic;
@@ -66,15 +67,7 @@ namespace Nasfaq.API
 
         public static string BytesToString(byte[] bytes)
         {
-            string message = null;
-            unsafe
-            {
-                fixed(byte* ptr = bytes)
-                {
-                    message = new string((sbyte*)ptr, 0, bytes.Length);
-                }
-            }
-            return message;
+            return Encoding.UTF8.GetString(bytes);
         }
 
         public SocketIO(string rest, string ws)
@@ -132,6 +125,7 @@ namespace Nasfaq.API
                 cookies);
 
             ws = new WebSocket($"{wsUrl}?{user}{socketid}{eio}{tWebsocket}{sid}");
+            
             ws.OnOpen += (sender, e) => { OnOpen?.Invoke(); };
             ws.OnMessage += (sender, e) => { OnMessageWrap(e, ws, OnMessage, OnWebsocketData); };
             ws.OnError += (StringReader, e) => { OnError?.Invoke(e.Message); };
