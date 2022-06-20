@@ -27,15 +27,23 @@ If you wish to use `msbuild` instead of dotnet core, you can just install `Visua
 Clone the git repository and add a reference to it in your C# project. Here's a template for a new project's .csproj:
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="pathToNasfaqAPI/Nasfaq.API.csproj"/>
-  </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
 </Project>
 ```
+Then, add the priestess nuget feed to your local nuget settings:
+```bash
+dotnet nuget add source --username USERNAME --password TOKEN --store-password-in-clear-text --name github_priestess "https://nuget.pkg.github.com/priestesshpt/index.json"
+```
+Change USERNAME with your username and TOKEN with your `read:packages` [package token](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries)
+
+Finally add the package to your project with:
+```bash
+dotnet add package Nasfaq.API 
+```
+
 ### Develop with dotnet
 You can create a new project with `dotnet new ...`, replace `...` with the type of app you want, like `console`.
 While in your project's repository, run `dotnet restore` to fix dependencies, `dotnet run` to quickly build and run, and `dotnet build` to build.
