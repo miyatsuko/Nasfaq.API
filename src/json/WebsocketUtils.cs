@@ -74,6 +74,22 @@ namespace Nasfaq.JSON
                     case "bettingPoolDeleted": return ReadStandard<WSBettingPoolDeleted>(jsonElement);
                     case "bettingPoolArchived": return ReadStandard<WSBettingPoolArchived>(jsonElement);
                     case "benchmarkLeaderboardUpdate": return ReadStandard<WSBenchmarkLeaderboardUpdate>(jsonElement);
+                    case "mutualFundAddPendingDissolve": return ReadStandard<WSMutualFundAddPendingDissolve>(jsonElement);
+                    case "mutualFundBalanceUpdate": return ReadStandard<WSMutualFundBalanceUpdate>(jsonElement);
+                    case "mutualFundBulletinUpdate": return ReadStandard<WSMutualFundBulletinUpdate>(jsonElement);
+                    case "mutualFundChatUpdate": return ReadStandard<WSMutualFundChatUpdate>(jsonElement);
+                    case "mutualFundDailyHistoryUpdate": return ReadStandard<WSMutualFundDailyHistoryUpdate>(jsonElement);
+                    case "mutualFundJoinRequestsUpdate": return ReadStandard<WSMutualFundJoinRequestsUpdate>(jsonElement);
+                    case "mutualFundMakePublicUpdate": return ReadStandard<WSMutualFundMakePublicUpdate>(jsonElement);
+                    case "mutualFundMembersUpdate": return ReadStandard<WSMutualFundMembersUpdate>(jsonElement);
+                    case "mutualFundOrderUpdate": return ReadStandard<WSMutualFundOrderUpdate>(jsonElement);
+                    case "mutualFundPortfolioUpdate": return ReadStandard<WSMutualFundPortfolioUpdate>(jsonElement);
+                    case "mutualFundRemoveUserRequest": return ReadStandard<WSMutualFundRemoveUserRequest>(jsonElement);
+                    case "mutualFundResetOrdersUpdate": return ReadStandard<WSMutualFundResetOrdersUpdate>(jsonElement);
+                    case "mutualFundRunningHistoryUpdate": return ReadStandard<WSMutualFundRunningHistoryUpdate>(jsonElement);
+                    case "mutualFundUserFundsUpdate": return ReadStandard<WSMutualFundUserFundsUpdate>(jsonElement);
+                    case "mutualFundUserOrderUpdate": return ReadStandard<WSMutualFundUserOrderUpdate>(jsonElement);
+                    case "newMutualFund": return ReadStandard<WSNewMutualFund>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }

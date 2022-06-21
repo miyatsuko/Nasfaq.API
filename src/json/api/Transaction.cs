@@ -9,5 +9,6 @@ namespace Nasfaq.JSON
         public long timestamp { get; set; }
         public bool completed { get; set; }
         public double price { get; set; }
+        public bool fund { get; set; }
     }
 }

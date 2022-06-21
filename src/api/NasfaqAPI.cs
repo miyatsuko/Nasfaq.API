@@ -9,7 +9,7 @@ using Nasfaq.JSON;
 
 namespace Nasfaq.API
 {
-    public class NasfaqAPI : IDisposable
+    public partial class NasfaqAPI : IDisposable
     {
         public const int MAX_MULTICOIN = 10;
         public const int CYLCES_BETWEEN_ADJUSTMENTS = 24 * 6;
@@ -99,9 +99,9 @@ namespace Nasfaq.API
             httpClient?.Dispose();
         }
         
-        public async Task OpenSocketAsync(string userId = null, string socketId = null)
+        public async Task OpenSocketAsync(string userId = null, string socketId = null, Dictionary<string, string> fundIds = null)
         {
-            await mainSocket.ConnectAsync(httpClient, userId, socketId);
+            await mainSocket.ConnectAsync(httpClient, userId, socketId, fundIds);
         }
 
         public void CloseSocketAsync()
@@ -723,91 +723,6 @@ namespace Nasfaq.API
                 headers
             );
         } 
-
-        public async Task<GetUserInfo> GetUserInfo()
-        {
-            string json = await HttpHelper.GET(
-                httpClient,
-                "https://nasfaq.biz/api/getUserInfo",
-                headers
-            );
-
-            JsonDocument jsonDocument = JsonDocument.Parse(json);
-            JsonElement root = jsonDocument.RootElement;
-
-            if(root.TryGetProperty("loggedout", out JsonElement isLoggedOut))
-            {
-                if(isLoggedOut.GetBoolean())
-                {
-                    throw new LoggedOutException();
-                }
-            }
-
-            GetUserInfo getUserInfo = new GetUserInfo();
-            getUserInfo.loggedout = root.GetProperty("loggedout").GetBoolean();
-            getUserInfo.username = root.GetProperty("username").GetString();
-            getUserInfo.id = root.GetProperty("id").GetString();
-            getUserInfo.email = root.GetProperty("email").GetString();
-            {
-                JsonElement perfArray = root.GetProperty("performance");
-                getUserInfo.performance = new UserInfo_PerformanceTick[perfArray.GetArrayLength()];
-                for(int i = 0; i < getUserInfo.performance.Length; i++)
-                {
-                    getUserInfo.performance[i] = new UserInfo_PerformanceTick()
-                    {
-                        worth = Convert.ToDouble(perfArray[i].GetProperty("worth").GetString()),
-                        timestamp = perfArray[i].GetProperty("timestamp").GetInt64()
-                    };
-                }
-            }
-            getUserInfo.verified = root.GetProperty("verified").GetBoolean();
-            getUserInfo.wallet = JsonSerializer.Deserialize<UserWallet>(root.GetProperty("wallet").GetString());
-            getUserInfo.icon = root.GetProperty("icon").GetString();
-            getUserInfo.admin = root.GetProperty("admin").GetBoolean();
-            getUserInfo.settings = JsonSerializer.Deserialize<UserInfo_Settings>(root.GetProperty("settings").GetString());
-            getUserInfo.color = root.GetProperty("color").GetString();
-            getUserInfo.hat = root.GetProperty("hat").GetString();
-            getUserInfo.muted = JsonSerializer.Deserialize<UserInfo_Muted>(root.GetProperty("muted").GetString());
-            getUserInfo.items = JsonSerializer.Deserialize<Dictionary<string, UserInfo_Item[]>>(root.GetProperty("items").GetString());
-            getUserInfo.taxCredits = root.GetProperty("taxCredits").GetDouble();
-            {
-                JsonElement usersBlockingArray = root.GetProperty("usersBlocking");
-                getUserInfo.usersBlocking = new string[usersBlockingArray.GetArrayLength()];
-                for(int i = 0; i < getUserInfo.usersBlocking.Length; i++)
-                {
-                    getUserInfo.usersBlocking[i] = usersBlockingArray[i].GetString();
-                }
-            }
-            {
-                JsonElement usersBlockedArray = root.GetProperty("usersBlockedBy");
-                getUserInfo.usersBlockedBy = new string[usersBlockedArray.GetArrayLength()];
-                for(int i = 0; i < getUserInfo.usersBlockedBy.Length; i++)
-                {
-                    getUserInfo.usersBlockedBy[i] = usersBlockedArray[i].GetString();
-                }
-            }
-            {
-                JsonElement dmArray = root.GetProperty("directMessages");
-                getUserInfo.directMessages = new UserInfo_DirectMessages[dmArray.GetArrayLength()];
-                for(int i = 0; i < getUserInfo.directMessages.Length; i++)
-                {
-                    getUserInfo.directMessages[i] = new UserInfo_DirectMessages()
-                    {
-                        roomid = dmArray[i].GetProperty("roomid").GetString(),
-                        user1 = dmArray[i].GetProperty("user1").GetString(),
-                        user2 = dmArray[i].GetProperty("user2").GetString(),
-                        user1name = dmArray[i].GetProperty("user1name").GetString(),
-                        user2name = dmArray[i].GetProperty("user2name").GetString(),
-                        preview = dmArray[i].GetProperty("preview").GetString(),
-                        timestamp = dmArray[i].GetProperty("timestamp").GetInt64()
-                    };
-                }
-            }
-            getUserInfo.socketid = root.GetProperty("socketid").GetString();
-            getUserInfo.brokerFeeTotal = root.GetProperty("brokerFeeTotal").GetDouble();
-            return getUserInfo;
-        }
-
         public async Task<GetUserItems> GetUserItems(string userid)
         {
             return await HttpHelper.GET<GetUserItems>(
