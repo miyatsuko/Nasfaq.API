@@ -83,7 +83,7 @@ namespace Nasfaq.JSON
                     case "mutualFundMakePublicUpdate": return ReadStandard<WSMutualFundMakePublicUpdate>(jsonElement);
                     case "mutualFundMembersUpdate": return ReadStandard<WSMutualFundMembersUpdate>(jsonElement);
                     case "mutualFundOrderUpdate": return ReadStandard<WSMutualFundOrderUpdate>(jsonElement);
-                    case "mutualFundPortfolioUpdate": return ReadStandard<WSMutualFundPortfolioUpdate>(jsonElement);
+                    case "mutualFundPortfolioUpdate": return WSMutualFundPortfolioUpdate(jsonElement);
                     case "mutualFundRemoveUserRequest": return ReadStandard<WSMutualFundRemoveUserRequest>(jsonElement);
                     case "mutualFundResetOrdersUpdate": return ReadStandard<WSMutualFundResetOrdersUpdate>(jsonElement);
                     case "mutualFundRunningHistoryUpdate": return ReadStandard<WSMutualFundRunningHistoryUpdate>(jsonElement);
@@ -140,6 +140,44 @@ namespace Nasfaq.JSON
                 transtionUpdate.wallet = JsonSerializer.Deserialize<UserWallet>(wallet.GetRawText());
             }
             return transtionUpdate;
+        }
+
+        private static WSMutualFundPortfolioUpdate WSMutualFundPortfolioUpdate(JsonElement element)
+        {
+            WSMutualFundPortfolioUpdate mutualFundPortfolioUpdate = new WSMutualFundPortfolioUpdate();
+            mutualFundPortfolioUpdate.fund = element.GetProperty("fund").GetString();
+            JsonElement update = element.GetProperty("tUpdate");
+            {
+                MutualFundPortfolioUpdate_Update mutualUpdate = new MutualFundPortfolioUpdate_Update();
+                mutualUpdate.@event = update.GetProperty("event").GetString();
+                mutualUpdate.transactions = new Transaction[update.GetProperty("transactions").GetArrayLength()];
+                int i = 0;
+                foreach(JsonElement transaction in update.GetProperty("transactions").EnumerateArray())
+                {
+                    Transaction trans = new Transaction();
+                    trans.coin = transaction.GetProperty("coin").GetString();
+                    trans.type = transaction.GetProperty("type").GetInt32();
+                    trans.userid = transaction.GetProperty("userid").GetString();
+                    trans.quantity = transaction.GetProperty("quantity").GetInt32();
+                    trans.timestamp = transaction.GetProperty("timestamp").GetInt64();
+                    trans.completed = transaction.GetProperty("completed").GetBoolean();
+                    JsonElement price = transaction.GetProperty("price");
+                    if(price.ValueKind != JsonValueKind.Null)
+                    {
+                        trans.price = price.GetDouble();
+                    }
+                    mutualUpdate.transactions[i] = trans;
+                    i++;
+                }
+                JsonElement portfolio = update.GetProperty("portfolio");
+                if(portfolio.ValueKind != JsonValueKind.Null)
+                {
+                    mutualUpdate.portfolio = JsonSerializer.Deserialize<Dictionary<string, MutualFundData_Fund_Portfolio>>(portfolio.GetRawText());
+                }
+                mutualFundPortfolioUpdate.tUpdate = mutualUpdate;
+            }
+            
+            return mutualFundPortfolioUpdate;
         }
 
         private static WSDividendUpdate ReadDividendUpdate(JsonElement element)
