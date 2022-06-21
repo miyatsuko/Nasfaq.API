@@ -35,7 +35,7 @@ Clone the git repository and add a reference to it in your C# project. Here's a 
 ```
 Then, add the priestess nuget feed to your local nuget settings:
 ```bash
-dotnet nuget add source --username USERNAME --password TOKEN --store-password-in-clear-text --name github_priestess "https://nuget.pkg.github.com/priestesshpt/index.json"
+dotnet nuget add source --username USERNAME --password TOKEN --store-password-in-clear-text --name github_miyatsuko "https://nuget.pkg.github.com/miyatsuko/index.json"
 ```
 Change USERNAME with your username and TOKEN with your `read:packages` [package token](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries)
 
