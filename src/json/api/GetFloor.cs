@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getFloor
@@ -21,5 +24,20 @@ namespace Nasfaq.JSON
         public string creator { get; set; }
         public int posts { get; set; }
         public string[] posters { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetFloor> GetFloor()
+        {
+            return await HttpHelper.GET<GetFloor>(
+                httpClient,
+                "https://nasfaq.biz/api/getFloor",
+                headers
+            );
+        }
     }
 }

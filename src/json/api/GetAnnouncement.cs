@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getAnnouncement
@@ -11,5 +14,20 @@ namespace Nasfaq.JSON
     {
         public string message { get; set; }
         public string date { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetAnnouncement> GetAnnouncement()
+        {
+            return await HttpHelper.GET<GetAnnouncement>(
+                httpClient,
+                "https://nasfaq.biz/api/getAnnouncement",
+                headers
+            );
+        }
     }
 }

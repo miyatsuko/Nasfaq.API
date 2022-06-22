@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getGlobalChat
@@ -18,5 +21,20 @@ namespace Nasfaq.JSON
         public int messageid { get; set; }
         public string message { get; set; }
         public long timestamp { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetGlobalChat> GetGlobalChat()
+        {
+            return await HttpHelper.GET<GetGlobalChat>(
+                httpClient,
+                "https://nasfaq.biz/api/getGlobalChat",
+                headers
+            );
+        }
     }
 }

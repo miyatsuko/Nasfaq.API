@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -24,5 +26,20 @@ namespace Nasfaq.JSON
         public double marketCap { get; set; }
         public int totalShares { get; set; }
         public long timestamp { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetBenchmarkInfo> GetBenchmarkInfo()
+        {
+            return await HttpHelper.GET<GetBenchmarkInfo>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBenchmarkInfo",
+                headers
+            );
+        }
     }
 }

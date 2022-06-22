@@ -1,4 +1,7 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text.Json;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -46,5 +49,21 @@ namespace Nasfaq.JSON
         public string lastOutbidid { get; set; }
         public string lastOutbid { get; set; }
         public double lastBid { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<PlaceAuctionSell_Response> PlaceAuctionSell(PlaceAuctionSell_Request sell)
+        {
+            return await HttpHelper.POST<PlaceAuctionSell_Response>(
+                httpClient,
+                "https://nasfaq.biz/api/placeAuctionSell",
+                headers,
+                JsonSerializer.Serialize<PlaceAuctionSell_Request>(sell)
+            );
+        }
     }
 }

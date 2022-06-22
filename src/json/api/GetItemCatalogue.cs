@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getCatalogue
@@ -14,5 +17,20 @@ namespace Nasfaq.JSON
         public string modifier { get; set; }
         public double modifierMult { get; set; }
         public bool tradeable { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetItemCatalogue> GetItemCatalogue()
+        {
+            return await HttpHelper.GET<GetItemCatalogue>(
+                httpClient,
+                "https://nasfaq.biz/api/getCatalogue",
+                headers
+            );
+        }
     }
 }

@@ -1,3 +1,7 @@
+using System.Threading.Tasks;
+using System.Text.Json;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/trade
@@ -80,5 +84,46 @@ namespace Nasfaq.JSON
     {
         Buy = 0,
         Sell = 1
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<string> Trade(Trade data)
+        {
+            return await HttpHelper.POST(
+                httpClient,
+                "https://nasfaq.biz/api/trade",
+                headers,
+                JsonSerializer.Serialize<Trade>(data)
+            );
+        }
+
+        public async Task<string> Trade(string coin, TradeType type)
+        {
+            return await Trade(new Trade(coin, type));
+        }
+
+        public async Task<string> Trade(string coin, int quantity, TradeType type)
+        {
+            return await Trade(new Trade(coin, quantity, type));
+        }
+
+        public async Task<string> Trade(string[] buys, string[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade((string, int)[] buys, (string, int)[] sells)
+        {
+            return await Trade(new Trade(buys, sells));
+        }
+
+        public async Task<string> Trade(Trade_Coin[] orders)
+        {
+            return await Trade(new Trade(orders));
+        }
     }
 }

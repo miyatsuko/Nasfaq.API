@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getGachaboard
@@ -10,5 +13,20 @@ namespace Nasfaq.JSON
     {
         public string username { get; set; }
         public double spentAmt { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetGachaboard> GetGachaboard()
+        {
+            return await HttpHelper.GET<GetGachaboard>(
+                httpClient,
+                "https://nasfaq.biz/api/getGachaboard",
+                headers
+            );
+        }
     }
 }

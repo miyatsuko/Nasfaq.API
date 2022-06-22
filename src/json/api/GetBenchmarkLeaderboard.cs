@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getBenchmarkLeaderboard
@@ -31,5 +34,20 @@ namespace Nasfaq.JSON
         public double newVal { get; set; }
         public double change { get; set; }
         public double percentChange { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetBenchmarkLeaderboard> GetBenchmarkLeaderboard()
+        {
+            return await HttpHelper.GET<GetBenchmarkLeaderboard>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBenchmarkLeaderboard",
+                headers
+            );
+        }
     }
 }

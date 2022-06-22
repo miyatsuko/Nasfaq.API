@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getChatLog
@@ -15,5 +18,20 @@ namespace Nasfaq.JSON
         public string username { get; set; }
         public string text { get; set; }
         public string[] mentions { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetChatLog> GetChatLog(string roomid)
+        {
+            return await HttpHelper.GET<GetChatLog>(
+                httpClient,
+                $"https://nasfaq.biz/api/getChatLog?room={roomid}",
+                headers
+            );
+        }
     }
 }

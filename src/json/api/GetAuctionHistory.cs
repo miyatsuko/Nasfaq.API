@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/getAuctionHistory
@@ -17,5 +20,20 @@ namespace Nasfaq.JSON
         public string bidder { get; set; }
         public string bidderid { get; set; }
         public double currentBid { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetAuctionHistory> GetAuctionHistory()
+        {
+            return await HttpHelper.GET<GetAuctionHistory>(
+                httpClient,
+                $"https://nasfaq.biz/api/getAuctionHistory",
+                headers
+            );
+        }
     }
 }

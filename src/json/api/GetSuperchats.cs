@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -39,5 +41,20 @@ namespace Nasfaq.JSON
         public long expiration { get; set; }
         public double amount { get; set; }
         public string message { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetSuperchats> GetSuperchats()
+        {
+            return await HttpHelper.GET<GetSuperchats>(
+                httpClient,
+                "https://nasfaq.biz/api/getSuperchats",
+                headers
+            );
+        }
     }
 }

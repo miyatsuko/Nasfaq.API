@@ -1,3 +1,7 @@
+using System.Threading.Tasks;
+using System.Text.Json;
+using Nasfaq.JSON;
+
 namespace Nasfaq.JSON
 {
     //api/findEgg
@@ -25,6 +29,32 @@ namespace Nasfaq.JSON
         public FindEgg(string eggid)
         {
             this.eggid = eggid;
+        }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<NasfaqResponse> FindEgg(FindEgg egg)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/findEgg",
+                headers,
+                JsonSerializer.Serialize(egg)
+            );
+        }
+
+        public async Task<NasfaqResponse> FindEgg(string eggid)
+        {
+            return await HttpHelper.POST<NasfaqResponse>(
+                httpClient,
+                "https://nasfaq.biz/api/findEgg",
+                headers,
+                JsonSerializer.Serialize(new FindEgg(eggid))
+            );
         }
     }
 }

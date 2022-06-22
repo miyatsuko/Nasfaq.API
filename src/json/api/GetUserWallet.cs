@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -20,5 +22,20 @@ namespace Nasfaq.JSON
         public int amt { get; set; }
         public long timestamp { get; set; }
         public double meanPurchasePrice { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetUserWallet> GetUserWallet(string userid)
+        {
+            return await HttpHelper.GET<GetUserWallet>(
+                httpClient,
+                $"https://nasfaq.biz/api/getUserWallet?userid={userid}",
+                headers
+            );
+        }
     }
 }

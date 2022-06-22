@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -33,5 +35,20 @@ namespace Nasfaq.JSON
         public string username { get; set; }
         public double betAmount { get; set; }
         public int option { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetBettingPools> GetBettingPools()
+        {
+            return await HttpHelper.GET<GetBettingPools>(
+                httpClient,
+                $"https://nasfaq.biz/api/getBettingPools",
+                headers
+            );
+        }
     }
 }

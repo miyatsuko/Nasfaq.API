@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -36,5 +38,39 @@ namespace Nasfaq.JSON
         public long timestamp { get; set; }
         public double price { get; set; }
         public int inCirculation { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetMarketInfo> GetMarketInfo(bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        {
+            return await GetMarketInfo("?all", showPrice, showSaleValue, showInCirculation, showHistory);
+        }
+
+        public async Task<GetMarketInfo> GetMarketInfo(IList<string> coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        {
+            string coinsstr = "?coins=";
+            for(int i = 0; i < coins.Count; i++)
+            {
+                coinsstr += coins[i];
+                if(i + 1 < coins.Count - 1)
+                {
+                    coinsstr += ",";
+                }
+            }
+            return await GetMarketInfo(coinsstr, showPrice, showSaleValue, showInCirculation, showHistory);
+        }
+
+        private async Task<GetMarketInfo> GetMarketInfo(string coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        {
+            return await HttpHelper.GET<GetMarketInfo>(
+                httpClient,
+                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice.ToString().ToLower()}&saleValue={showSaleValue.ToString().ToLower()}&inCirculation={showInCirculation.ToString().ToLower()}{(showHistory ? "&history" : "")}",
+                headers
+            );
+        }
     }
 }

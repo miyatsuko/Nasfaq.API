@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using Nasfaq.JSON;
 
 namespace Nasfaq.JSON
 {
@@ -52,5 +54,27 @@ namespace Nasfaq.JSON
         public string icon { get; set; }
         public int amtOwned { get; set; }
         public string color { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetLeaderboard> GetLeaderboard(bool leaderboard, bool oshiboard)
+        {
+            string param = "";
+            if(leaderboard) param = "?leaderboard";
+            if(oshiboard)
+            {
+                if(leaderboard) param += "&oshiboard";
+                else param = "?oshiboard";
+            }
+            return await HttpHelper.GET<GetLeaderboard>(
+                httpClient,
+                $"https://nasfaq.biz/api/getLeaderboard{param}",
+                headers
+            );
+        }
     }
 }
