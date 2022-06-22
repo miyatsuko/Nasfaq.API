@@ -46,5 +46,10 @@ namespace Nasfaq.API
         {
             return await GetMutualFundSocketIds(new GetMutualFundSocketIds_Request(fundids));
         }
+
+        public async Task<GetMutualFundSocketIds_Response> GetMutualFundSocketIds(string fundid)
+        {
+            return await GetMutualFundSocketIds(new GetMutualFundSocketIds_Request(new string[] {fundid}));
+        }
     }
 }

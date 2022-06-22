@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Text.Json;
 using Nasfaq.JSON;
@@ -122,9 +123,20 @@ namespace Nasfaq.API
                 getUserInfo.performance = new UserInfo_PerformanceTick[perfArray.GetArrayLength()];
                 for(int i = 0; i < getUserInfo.performance.Length; i++)
                 {
+                    double worth = 0.0;
+                    try
+                    {
+                        worth = Convert.ToDouble(perfArray[i].GetProperty("worth").GetString(), CultureInfo.InvariantCulture);
+                    }
+                    catch
+                    {
+                        worth = 0.0;
+                        Console.WriteLine($"WARNING: field \"worth\" was [{perfArray[i].GetProperty("worth").GetRawText()}]");
+                    }
+
                     getUserInfo.performance[i] = new UserInfo_PerformanceTick()
                     {
-                        worth = Convert.ToDouble(perfArray[i].GetProperty("worth").GetString()),
+                        worth = worth,
                         timestamp = perfArray[i].GetProperty("timestamp").GetInt64()
                     };
                 }
