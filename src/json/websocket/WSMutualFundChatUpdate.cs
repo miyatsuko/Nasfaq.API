@@ -5,6 +5,6 @@ namespace Nasfaq.JSON
     public class WSMutualFundChatUpdate : IWebsocketData
     {
         public string fund { get; set; }
-        public string message { get; set; }
+        public GetMutualFundChat_Log message { get; set; }
     }
 }
