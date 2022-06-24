@@ -11,61 +11,21 @@ namespace Nasfaq.JSON
     {   
         public Dictionary<string, Stats> stats { get; set; }
         public Stats_CoinHistory[] coinHistory { get; set; }
-    }
 
-    public class GetStats_Raw
-    {   
-        public Dictionary<string, Stats> stats { get; set; }
-        public string coinHistory { get; set; }
-    }
-    
-    public class Stats
-    {
-        public Stats_Data subscriberCount { get; set; }
-        public Stats_Data dailySubscriberCount { get; set; }
-        public Stats_Data weeklySubscriberCount { get; set; }
-        public Stats_Data viewCount { get; set; }
-        public Stats_Data dailyViewCount { get; set; }
-        public Stats_Data weeklyViewCount { get; set; }
-    }
-
-    public class Stats_Data
-    {
-        public string name { get; set; }
-        public string[] labels { get; set; }
-        public int[] data { get; set; }
-    }
-
-    public class Stats_CoinHistory
-    {
-        public long timestamp { get; set; }
-        public Dictionary<string, Stats_CoinInfo> data { get; set; }
-    }
-
-    public class Stats_CoinInfo
-    {
-        public string coin { get; set; }
-        public double price { get; set; }
-        public int inCirculation { get; set; }
-    }
-}
-
-namespace Nasfaq.API
-{
-    public partial class NasfaqAPI
-    {
-        public async Task<GetStats> GetStats()
+        public static GetStats DeserializeJson(string json)
         {
-            string json = await HttpHelper.GET(
-                httpClient,
-                "https://nasfaq.biz/api/getStats",
-                headers
-            );
-            
             GetStats getStats = new GetStats();
-            getStats.stats = new System.Collections.Generic.Dictionary<string, Stats>();
             JsonDocument jsonDocument = JsonDocument.Parse(json);
-            JsonElement stats = jsonDocument.RootElement.GetProperty("stats");
+            getStats.stats = DeserializeStats(jsonDocument.RootElement.GetProperty("stats"));
+
+            JsonElement coinHistory = jsonDocument.RootElement.GetProperty("coinHistory");
+            getStats.coinHistory = JsonSerializer.Deserialize<Stats_CoinHistory[]>(coinHistory.ToString());
+            return getStats;
+        }
+
+        public static Dictionary<string, Stats> DeserializeStats(JsonElement stats)
+        {
+            Dictionary<string, Stats> statsDic = new Dictionary<string, Stats>();
             foreach(JsonProperty kvp in stats.EnumerateObject())
             {
                 Stats statsObject = new Stats();
@@ -116,14 +76,61 @@ namespace Nasfaq.API
                     else if(j == 4) statsObject.dailyViewCount = data;
                     else if(j == 5) statsObject.weeklyViewCount = data;
                 }
-                getStats.stats.Add(kvp.Name, statsObject);
+                statsDic.Add(kvp.Name, statsObject);
             }
+            return statsDic;
+        }
+    }
 
-            JsonElement coinHistory = jsonDocument.RootElement.GetProperty("coinHistory");
-            getStats.coinHistory = JsonSerializer.Deserialize<Stats_CoinHistory[]>(coinHistory.ToString());
+    public class GetStats_Raw
+    {   
+        public Dictionary<string, Stats> stats { get; set; }
+        public string coinHistory { get; set; }
+    }
+    
+    public class Stats
+    {
+        public Stats_Data subscriberCount { get; set; }
+        public Stats_Data dailySubscriberCount { get; set; }
+        public Stats_Data weeklySubscriberCount { get; set; }
+        public Stats_Data viewCount { get; set; }
+        public Stats_Data dailyViewCount { get; set; }
+        public Stats_Data weeklyViewCount { get; set; }
+    }
 
+    public class Stats_Data
+    {
+        public string name { get; set; }
+        public string[] labels { get; set; }
+        public int[] data { get; set; }
+    }
 
-            return getStats;
+    public class Stats_CoinHistory
+    {
+        public long timestamp { get; set; }
+        public Dictionary<string, Stats_CoinInfo> data { get; set; }
+    }
+
+    public class Stats_CoinInfo
+    {
+        public string coin { get; set; }
+        public double price { get; set; }
+        public int inCirculation { get; set; }
+    }
+}
+
+namespace Nasfaq.API
+{
+    public partial class NasfaqAPI
+    {
+        public async Task<GetStats> GetStats()
+        {
+            string json = await HttpHelper.GET(
+                httpClient,
+                "https://nasfaq.biz/api/getStats",
+                headers
+            );
+            return Nasfaq.JSON.GetStats.DeserializeJson(json);
         }
     }
 }

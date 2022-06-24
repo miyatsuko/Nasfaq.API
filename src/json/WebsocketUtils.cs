@@ -45,6 +45,11 @@ namespace Nasfaq.JSON
             {
                 switch(websocketName)
                 {
+                    /*missing 
+                    mutualFundPayoutsUpdate, 
+                    mutualFundDissolved,
+                    itemsUpdate
+                    */
                     case "coinPriceUpdate": return ReadStandard<WSCoinPriceUpdate>(jsonElement);
                     case "dividendUpdate": return ReadDividendUpdate(jsonElement);
                     case "floorUpdate": return ReadStandard<WSFloorUpdate>(jsonElement);
@@ -92,6 +97,11 @@ namespace Nasfaq.JSON
                     case "mutualFundUserOrderUpdate": return ReadStandard<WSMutualFundUserOrderUpdate>(jsonElement);
                     case "newMutualFund": return ReadStandard<WSNewMutualFund>(jsonElement);
                     case "mutualFundStatUpdate": return ReadStandard<WSMutualFundStatUpdate>(jsonElement);
+                    case "userWorthUpdate": return ReadStandard<WSUserWorthUpdate>(jsonElement);
+                    case "walletUpdate": return ReadStandard<WSWalletUpdate>(jsonElement);
+                    case "addChatBlock": return ReadStandard<WSAddChatBlock>(jsonElement);
+                    case "removeChatBlock": return ReadStandard<WSRemoveChatBlock>(jsonElement);
+                    case "addMessageDM": return ReadStandard<WSAddMessageDM>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }
@@ -199,7 +209,7 @@ namespace Nasfaq.JSON
 
         private static WSStatisticsUpdate ReadStatisticsUpdate(JsonElement element)
         {
-            return new WSStatisticsUpdate() { stats = JsonSerializer.Deserialize<Dictionary<string, Stats> >(element.ToString())};
+            return new WSStatisticsUpdate() { stats = GetStats.DeserializeStats(element)};
         }
 
         private static WSOshiboardUpdate ReadOshiboardUpdate(JsonElement element)
@@ -214,7 +224,7 @@ namespace Nasfaq.JSON
 
         private static WSMarketSwitch ReadMarketSwitch(JsonElement element)
         {
-            return new WSMarketSwitch() { marketSwitch = JsonSerializer.Deserialize<bool>(element.ToString())};
+            return new WSMarketSwitch() { marketSwitch = element.GetBoolean()};
         }
     }
 }
