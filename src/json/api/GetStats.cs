@@ -16,15 +16,20 @@ namespace Nasfaq.JSON
         {
             GetStats getStats = new GetStats();
             JsonDocument jsonDocument = JsonDocument.Parse(json);
-            getStats.stats = DeserializeStats(jsonDocument.RootElement.GetProperty("stats"));
+            getStats.stats = DeserializeStats(jsonDocument.RootElement.GetProperty("stats"), false);
 
             JsonElement coinHistory = jsonDocument.RootElement.GetProperty("coinHistory");
             getStats.coinHistory = JsonSerializer.Deserialize<Stats_CoinHistory[]>(coinHistory.ToString());
             return getStats;
         }
 
-        public static Dictionary<string, Stats> DeserializeStats(JsonElement stats)
+        public static Dictionary<string, Stats> DeserializeStats(JsonElement stats, bool asString)
         {
+            if(asString)
+            {
+                JsonDocument jsonDocument = JsonDocument.Parse(stats.GetString());
+                stats = jsonDocument.RootElement;
+            }
             Dictionary<string, Stats> statsDic = new Dictionary<string, Stats>();
             foreach(JsonProperty kvp in stats.EnumerateObject())
             {
@@ -39,12 +44,17 @@ namespace Nasfaq.JSON
                     else if(j == 4) element = kvp.Value.GetProperty("dailyViewCount");
                     else if(j == 5) element = kvp.Value.GetProperty("weeklyViewCount");
 
-                    JsonElement nameElement = element.GetProperty("name");
+                    JsonElement nameElement = default;
+                    if(!asString)
+                    {
+                        nameElement = element.GetProperty("name");
+                    }
+                    
                     JsonElement labelsElement = element.GetProperty("labels");
                     JsonElement dataElement = element.GetProperty("data");
 
                     Stats_Data data = new Stats_Data();
-                    data.name = nameElement.ToString();
+                    data.name = asString ? kvp.Name : nameElement.ToString();
                     data.labels = new string[labelsElement.GetArrayLength()];
                     data.data = new int[dataElement.GetArrayLength()];
 

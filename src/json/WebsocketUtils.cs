@@ -209,7 +209,7 @@ namespace Nasfaq.JSON
 
         private static WSStatisticsUpdate ReadStatisticsUpdate(JsonElement element)
         {
-            return new WSStatisticsUpdate() { stats = GetStats.DeserializeStats(element)};
+            return new WSStatisticsUpdate() { stats = GetStats.DeserializeStats(element, true)};
         }
 
         private static WSOshiboardUpdate ReadOshiboardUpdate(JsonElement element)
