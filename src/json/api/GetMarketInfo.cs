@@ -5,16 +5,16 @@ using Nasfaq.JSON;
 namespace Nasfaq.JSON
 {
     //api/getMarketInfo
-    public class GetMarketInfo
+    public class GetMarketInfo : NasfaqResponse
     {
-        public bool success { get; set; } = true;
-        //only if success is false
-        public string message { get; set; }
-
         //?all
         //?coins={coin1},{coin2},{coin...}
         public MarketInfo_Coins coinInfo { get; set; }
         public bool marketSwitch { get; set; }
+        //needs &brokerFeeTotal
+        public double brokerFeeTotal { get; set; }
+        //needs &brokerFee
+        public double brokerFee { get; set; }
     }
 
     public class MarketInfo_Coins
@@ -45,12 +45,12 @@ namespace Nasfaq.API
 {
     public partial class NasfaqAPI
     {
-        public async Task<GetMarketInfo> GetMarketInfo(bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        public async Task<GetMarketInfo> GetMarketInfo(bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory, bool showBrokerFeeTotal, bool showBrokerFee)
         {
-            return await GetMarketInfo("?all", showPrice, showSaleValue, showInCirculation, showHistory);
+            return await GetMarketInfo("?all", showPrice, showSaleValue, showInCirculation, showHistory, showBrokerFeeTotal, showBrokerFee);
         }
 
-        public async Task<GetMarketInfo> GetMarketInfo(IList<string> coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        public async Task<GetMarketInfo> GetMarketInfo(IList<string> coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory, bool showBrokerFeeTotal, bool showBrokerFee)
         {
             string coinsstr = "?coins=";
             for(int i = 0; i < coins.Count; i++)
@@ -61,14 +61,14 @@ namespace Nasfaq.API
                     coinsstr += ",";
                 }
             }
-            return await GetMarketInfo(coinsstr, showPrice, showSaleValue, showInCirculation, showHistory);
+            return await GetMarketInfo(coinsstr, showPrice, showSaleValue, showInCirculation, showHistory, showBrokerFeeTotal, showBrokerFee);
         }
 
-        private async Task<GetMarketInfo> GetMarketInfo(string coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory)
+        private async Task<GetMarketInfo> GetMarketInfo(string coins, bool showPrice, bool showSaleValue, bool showInCirculation, bool showHistory, bool showBrokerFeeTotal, bool showBrokerFee)
         {
             return await HttpHelper.GET<GetMarketInfo>(
                 httpClient,
-                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice.ToString().ToLower()}&saleValue={showSaleValue.ToString().ToLower()}&inCirculation={showInCirculation.ToString().ToLower()}{(showHistory ? "&history" : "")}",
+                $"https://nasfaq.biz/api/getMarketInfo{coins}&price={showPrice.ToString().ToLower()}&saleValue={showSaleValue.ToString().ToLower()}&inCirculation={showInCirculation.ToString().ToLower()}{(showHistory ? "&history" : "")}{(showBrokerFeeTotal ? "&brokerFeeTotal" : "")}{(showBrokerFee ? "&brokerFee" : "")}",
                 headers
             );
         }

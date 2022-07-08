@@ -30,23 +30,72 @@ namespace Nasfaq.API
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
-        public static int CyclesUntilDividends(long timestamp)
+        public static DateTime GetCurrentServerTime()
         {
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, NasfaqAPI.SERVER_TIMEZONE);
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, NasfaqAPI.SERVER_TIMEZONE);
+        }
+
+        public static int CyclesUntilDividends(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(7);
             return (int)((nasfaqCycleTime - nasfaqTimeNow).TotalSeconds / NasfaqAPI.CYCLE_LENGTH_IN_SECONDS);
         }
 
-        public static int CyclesUntilAdjustement(long timestamp)
+        public static long GetNextDividendsTimestamp(long timestamp = 0L)
         {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(7);
+            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+        }
 
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, NasfaqAPI.SERVER_TIMEZONE);
+        public static long GetLastDividendsTimestamp(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            return GetNextDividendsTimestamp(timestamp) - 604800_000;
+        }
+
+        public static int CyclesUntilAdjustement(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(9).AddMinutes(5);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
             return (int)((nasfaqCycleTime - nasfaqTimeNow).TotalSeconds / NasfaqAPI.CYCLE_LENGTH_IN_SECONDS);
+        }
+
+        public static long GetNextAdjustmentTimestamp(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(9).AddMinutes(5);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
+            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+        }
+
+        public static long GetNextSharesTimestamp(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(16).AddMinutes(2);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
+            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+        }
+
+        public static DateTime TimestampToDateTime(long timestamp)
+        {
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddMilliseconds(timestamp);
+            return dateTime;
         }
     }
 }

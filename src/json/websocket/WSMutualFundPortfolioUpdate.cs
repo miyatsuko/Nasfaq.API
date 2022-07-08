@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace Nasfaq.JSON
 {
+    //The portfolio only contains the coins that were changed
     public class WSMutualFundPortfolioUpdate : IWebsocketData
     {
         public string fund { get; set; }

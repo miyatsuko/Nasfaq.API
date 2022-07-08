@@ -91,9 +91,9 @@ namespace Nasfaq.API
 {
     public partial class NasfaqAPI
     {
-        public async Task<string> Trade(Trade data)
+        public async Task<NasfaqResponse> Trade(Trade data)
         {
-            return await HttpHelper.POST(
+            return await HttpHelper.POST<NasfaqResponse>(
                 httpClient,
                 "https://nasfaq.biz/api/trade",
                 headers,
@@ -101,27 +101,27 @@ namespace Nasfaq.API
             );
         }
 
-        public async Task<string> Trade(string coin, TradeType type)
+        public async Task<NasfaqResponse> Trade(string coin, TradeType type)
         {
             return await Trade(new Trade(coin, type));
         }
 
-        public async Task<string> Trade(string coin, int quantity, TradeType type)
+        public async Task<NasfaqResponse> Trade(string coin, int quantity, TradeType type)
         {
             return await Trade(new Trade(coin, quantity, type));
         }
 
-        public async Task<string> Trade(string[] buys, string[] sells)
+        public async Task<NasfaqResponse> Trade(string[] buys, string[] sells)
         {
             return await Trade(new Trade(buys, sells));
         }
 
-        public async Task<string> Trade((string, int)[] buys, (string, int)[] sells)
+        public async Task<NasfaqResponse> Trade((string, int)[] buys, (string, int)[] sells)
         {
             return await Trade(new Trade(buys, sells));
         }
 
-        public async Task<string> Trade(Trade_Coin[] orders)
+        public async Task<NasfaqResponse> Trade(Trade_Coin[] orders)
         {
             return await Trade(new Trade(orders));
         }

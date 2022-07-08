@@ -12,7 +12,7 @@ namespace Nasfaq.JSON
         public Dictionary<string, MutualFundData_History[]> fundHistory { get; set; }
         public Dictionary<string, MutualFundData_Stat> fundStats { get; set; }
         public Dictionary<string, MutualFundData_Order> orders { get; set; }
-        public Dictionary<string, double> fundPayout { get; set; }
+        public Dictionary<string, double> fundPayouts { get; set; }
         public Dictionary<string, long> fundsToDissolve { get; set; }
     }
 
