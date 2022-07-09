@@ -3,6 +3,6 @@ namespace Nasfaq.JSON
     //dividendUpdate
     public class WSDividendUpdate : IWebsocketData
     {
-        public UserWallet wallet;
+        public double balance { get; set; }
     }
 }

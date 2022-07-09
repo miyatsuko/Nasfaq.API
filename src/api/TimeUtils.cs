@@ -5,7 +5,10 @@ namespace Nasfaq.API
 {
     public static class TimeUtils
     {
-        
+        public const long WEEK = 7*24*60*60*1000;
+        public const long DAY = 24*60*60*1000;
+        public const long HOUR = 60*60*1000;
+        public const long MINUTE = 60*1000;
 
         public static long Get(int year, int month, int day, int minutes = 0, int seconds = 0, int milliseconds = 0)
         {
@@ -38,7 +41,7 @@ namespace Nasfaq.API
         public static int CyclesUntilDividends(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(7);
@@ -48,23 +51,23 @@ namespace Nasfaq.API
         public static long GetNextDividendsTimestamp(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
-            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
-            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
-                nasfaqCycleTime = nasfaqCycleTime.AddDays(7);
-            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqDividendTime = nasfaqTimeNow.Date.AddDays(-(int)nasfaqTimeNow.Date.DayOfWeek + (int)DayOfWeek.Saturday);
+            if (nasfaqTimeNow.CompareTo(nasfaqDividendTime) > 0)
+                nasfaqDividendTime = nasfaqDividendTime.AddDays(7);
+            return DateTimeWithTimezoneToTimestamp(nasfaqDividendTime, NasfaqAPI.SERVER_TIMEZONE);
         }
 
         public static long GetLastDividendsTimestamp(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            return GetNextDividendsTimestamp(timestamp) - 604800_000;
+            return GetNextDividendsTimestamp(timestamp - WEEK);
         }
 
         public static int CyclesUntilAdjustement(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(9).AddMinutes(5);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
@@ -74,21 +77,37 @@ namespace Nasfaq.API
         public static long GetNextAdjustmentTimestamp(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(9).AddMinutes(5);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
-            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+            return DateTimeWithTimezoneToTimestamp(nasfaqCycleTime, NasfaqAPI.SERVER_TIMEZONE);
         }
 
-        public static long GetNextSharesTimestamp(long timestamp = 0L)
+        public static long GetLastAdjustmentTimestamp(long timestamp = 0L)
         {
             if(timestamp == 0L) timestamp = GetCurrent();
-            DateTime nasfaqTimeNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(TimestampToDateTime(timestamp), NasfaqAPI.SERVER_TIMEZONE);
+            return GetLastAdjustmentTimestamp(timestamp - DAY);
+        }
+
+        public static long GetNextSharesClosingTimestamp(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);
+            DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(16);
+            if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
+                nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
+            return DateTimeWithTimezoneToTimestamp(nasfaqCycleTime, NasfaqAPI.SERVER_TIMEZONE);
+        }
+
+        public static long GetNextSharesProcessingTimestamp(long timestamp = 0L)
+        {
+            if(timestamp == 0L) timestamp = GetCurrent();
+            DateTime nasfaqTimeNow = TimestampToDateTimeInTimezone(timestamp, NasfaqAPI.SERVER_TIMEZONE);;
             DateTime nasfaqCycleTime = nasfaqTimeNow.Date.AddHours(16).AddMinutes(2);
             if (nasfaqTimeNow.CompareTo(nasfaqCycleTime) > 0)
                 nasfaqCycleTime = nasfaqCycleTime.AddDays(1);
-            return ((DateTimeOffset)nasfaqCycleTime).ToUnixTimeMilliseconds();
+            return DateTimeWithTimezoneToTimestamp(nasfaqCycleTime, NasfaqAPI.SERVER_TIMEZONE);
         }
 
         public static DateTime TimestampToDateTime(long timestamp)
@@ -96,6 +115,21 @@ namespace Nasfaq.API
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dateTime = dateTime.AddMilliseconds(timestamp);
             return dateTime;
+        }
+
+        public static DateTime TimestampToDateTimeInTimezone(long timestamp, string timezone)
+        {
+            return TimeZoneInfo.ConvertTime(TimestampToDateTime(timestamp), TimeZoneInfo.FindSystemTimeZoneById(timezone));
+        }
+
+        public static long DateTimeToTimestamp(DateTime time)
+        {
+            return ((DateTimeOffset)time).ToUnixTimeMilliseconds();
+        }
+
+        public static long DateTimeWithTimezoneToTimestamp(DateTime time, string timezone)
+        {
+            return ((DateTimeOffset)TimeZoneInfo.ConvertTimeToUtc(time, TimeZoneInfo.FindSystemTimeZoneById(NasfaqAPI.SERVER_TIMEZONE))).ToUnixTimeMilliseconds();
         }
     }
 }

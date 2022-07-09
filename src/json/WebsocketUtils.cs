@@ -46,12 +46,10 @@ namespace Nasfaq.JSON
                 switch(websocketName)
                 {
                     /*missing 
-                    mutualFundPayoutsUpdate, 
-                    mutualFundDissolved,
                     itemsUpdate
                     */
                     case "coinPriceUpdate": return ReadStandard<WSCoinPriceUpdate>(jsonElement);
-                    case "dividendUpdate": return ReadDividendUpdate(jsonElement);
+                    case "dividendUpdate": return ReadStandard<WSDividendUpdate>(jsonElement);
                     case "floorUpdate": return ReadStandard<WSFloorUpdate>(jsonElement);
                     case "gachaUpdate": return ReadStandard<WSGachaUpdate>(jsonElement);
                     case "brokerFeeUpdate": return ReadStandard<WSBrokerFeeUpdate>(jsonElement);
@@ -95,6 +93,8 @@ namespace Nasfaq.JSON
                     case "mutualFundRunningHistoryUpdate": return ReadStandard<WSMutualFundRunningHistoryUpdate>(jsonElement);
                     case "mutualFundUserFundsUpdate": return ReadStandard<WSMutualFundUserFundsUpdate>(jsonElement);
                     case "mutualFundUserOrderUpdate": return ReadStandard<WSMutualFundUserOrderUpdate>(jsonElement);
+                    case "mutualFundPayoutUpdate": return ReadStandard<WSMutualFundPayoutUpdate>(jsonElement);
+                    case "mutualFundDissolved" : return ReadMutualFundDissolved(jsonElement);
                     case "newMutualFund": return ReadStandard<WSNewMutualFund>(jsonElement);
                     case "mutualFundStatUpdate": return ReadStandard<WSMutualFundStatUpdate>(jsonElement);
                     case "userWorthUpdate": return ReadStandard<WSUserWorthUpdate>(jsonElement);
@@ -197,14 +197,14 @@ namespace Nasfaq.JSON
             return new WSAutoTraderTimestampUpdate() { timestamp = element.GetInt64()};
         }
 
-        private static WSDividendUpdate ReadDividendUpdate(JsonElement element)
-        {
-            return new WSDividendUpdate() { wallet = JsonSerializer.Deserialize<UserWallet>(element.ToString())};
-        }
-
         private static WSHistoryUpdate ReadHistoryUpdate(JsonElement element)
         {
             return new WSHistoryUpdate() { transactions = JsonSerializer.Deserialize<Transaction[]>(element.ToString())};
+        }
+
+        private static WSMutualFundDissolved ReadMutualFundDissolved(JsonElement element)
+        {
+            return new WSMutualFundDissolved() { fundId = element.ToString() };
         }
 
         private static WSStatisticsUpdate ReadStatisticsUpdate(JsonElement element)
