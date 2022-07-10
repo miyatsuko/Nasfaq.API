@@ -14,6 +14,7 @@ namespace Nasfaq.JSON
         public Dictionary<string, MutualFundData_Order> orders { get; set; }
         public Dictionary<string, double> fundPayouts { get; set; }
         public Dictionary<string, long> fundsToDissolve { get; set; }
+        public Dictionary<string, MutualFundData_UserTotal[]> fundUserTotals { get; set; }
     }
 
     public class MutualFundData_Fund
@@ -89,6 +90,14 @@ namespace Nasfaq.JSON
     {
         public int buys { get; set; }
         public int sells { get; set; }
+    }
+
+    public class MutualFundData_UserTotal
+    {
+        public string userid { get; set; }
+        public string username { get; set; }
+        public string icon { get; set; }
+        public int quantity { get; set; }
     }
 }
 

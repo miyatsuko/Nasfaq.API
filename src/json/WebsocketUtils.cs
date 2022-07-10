@@ -93,8 +93,10 @@ namespace Nasfaq.JSON
                     case "mutualFundRunningHistoryUpdate": return ReadStandard<WSMutualFundRunningHistoryUpdate>(jsonElement);
                     case "mutualFundUserFundsUpdate": return ReadStandard<WSMutualFundUserFundsUpdate>(jsonElement);
                     case "mutualFundUserOrderUpdate": return ReadStandard<WSMutualFundUserOrderUpdate>(jsonElement);
-                    case "mutualFundPayoutUpdate": return ReadStandard<WSMutualFundPayoutUpdate>(jsonElement);
-                    case "mutualFundDissolved" : return ReadMutualFundDissolved(jsonElement);
+                    case "mutualFundPayoutsUpdate": return ReadStandard<WSMutualFundPayoutsUpdate>(jsonElement);
+                    case "mutualFundDissolved": return ReadMutualFundDissolved(jsonElement);
+                    case "mutualFundAutotraderTimestampUpdate": return ReadStandard<WSMutualFundAutotraderTimestampUpdate>(jsonElement);
+                    case "mutualFundAutotraderUpdate": return ReadStandard<WSMutualFundAutotraderUpdate>(jsonElement);
                     case "newMutualFund": return ReadStandard<WSNewMutualFund>(jsonElement);
                     case "mutualFundStatUpdate": return ReadStandard<WSMutualFundStatUpdate>(jsonElement);
                     case "userWorthUpdate": return ReadStandard<WSUserWorthUpdate>(jsonElement);

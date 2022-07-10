@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Nasfaq.JSON
 {
-    public class WSMutualFundPayoutUpdate : Dictionary<string, double>, IWebsocketData
+    public class WSMutualFundPayoutsUpdate : Dictionary<string, double>, IWebsocketData
     {
         
     }
