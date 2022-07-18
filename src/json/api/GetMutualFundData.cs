@@ -15,6 +15,23 @@ namespace Nasfaq.JSON
         public Dictionary<string, double> fundPayouts { get; set; }
         public Dictionary<string, long> fundsToDissolve { get; set; }
         public Dictionary<string, MutualFundData_UserTotal[]> fundUserTotals { get; set; }
+
+        public List<string> GetEveryFundManagedByUser(string userid)
+        {
+            List<string> fundids = new List<string>();
+            foreach(KeyValuePair<string, MutualFundData_Fund> kvp in funds)
+            {
+                foreach(MutualFundData_Fund_Member member in kvp.Value.members)
+                {
+                    if(member.id == userid)
+                    {
+                        fundids.Add(kvp.Key);
+                        break;
+                    }
+                }
+            }
+            return fundids;
+        }
     }
 
     public class MutualFundData_Fund

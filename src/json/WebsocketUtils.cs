@@ -25,6 +25,11 @@ namespace Nasfaq.JSON
 
         public static IWebsocketData Read(string content)
         {
+            return Read(content, out _, out _);
+        }
+
+        public static IWebsocketData Read(string content, out string eventName, out WebsocketEventType eventType)
+        {
             JsonDocument jsonDocument = default;
             string websocketName = default;
             JsonElement jsonElement = default;
@@ -38,7 +43,30 @@ namespace Nasfaq.JSON
             {
                 Console.WriteLine($"Exception: {e.Message} for message {content}");
                 File.AppendAllText("websocketerrors.txt", $"{e.Message}\nfor message: {content}\n\n\n\n");
+                eventName = null;
+                eventType = WebsocketEventType.Public;
                 return null;
+            }
+
+
+            eventName = websocketName;
+            eventType = WebsocketEventType.Public;
+            switch(websocketName)
+            {
+                case "dividendUpdate": eventType = WebsocketEventType.User; break;
+                case "transactionUpdate": eventType = WebsocketEventType.User; break;
+                case "autoTraderTimestampUpdate": eventType = WebsocketEventType.User; break;
+                case "mutualFundRemoveUserRequest": eventType = WebsocketEventType.User; break;
+                case "mutualFundUserFundsUpdate": eventType = WebsocketEventType.User; break;
+                case "mutualFundUserOrderUpdate": eventType = WebsocketEventType.User; break;
+                case "walletUpdate": eventType = WebsocketEventType.User; break;
+                case "addChatBlock": eventType = WebsocketEventType.User; break;
+                case "removeChatBlock": eventType = WebsocketEventType.User; break;
+                case "addMessageDM": eventType = WebsocketEventType.User; break;
+                case "mutualFundAutotraderTimestampUpdate": eventType = WebsocketEventType.Fund; break;
+                case "mutualFundAutotraderUpdate": eventType = WebsocketEventType.Fund; break;
+                case "mutualFundChatUpdate": eventType = WebsocketEventType.Fund; break;
+                case "mutualFundJoinRequestsUpdate": eventType = WebsocketEventType.Fund; break;
             }
 
             try
@@ -104,6 +132,11 @@ namespace Nasfaq.JSON
                     case "addChatBlock": return ReadStandard<WSAddChatBlock>(jsonElement);
                     case "removeChatBlock": return ReadStandard<WSRemoveChatBlock>(jsonElement);
                     case "addMessageDM": return ReadStandard<WSAddMessageDM>(jsonElement);
+                    case "newPoll": return ReadStandard<WSNewPoll>(jsonElement);
+                    case "updatePollVotes": return ReadStandard<WSUpdatePollVotes>(jsonElement);
+                    case "togglePoll": return ReadStandard<WSTogglePoll>(jsonElement);
+                    case "deletePoll": return
+                    ReadStandard<WSDeletePoll>(jsonElement); 
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }
@@ -228,5 +261,12 @@ namespace Nasfaq.JSON
         {
             return new WSMarketSwitch() { marketSwitch = element.GetBoolean()};
         }
+    }
+
+    public enum WebsocketEventType
+    {
+        Public,
+        User,
+        Fund
     }
 }

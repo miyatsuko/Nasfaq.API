@@ -7,6 +7,7 @@ using Nasfaq.JSON;
 namespace Nasfaq.JSON
 {
     //api/addChatGlobal
+    //max 500 characters, min 1
     public class AddChatGlobal
     {
         public AddChatGlobal()

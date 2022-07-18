@@ -13,7 +13,7 @@ namespace Nasfaq.JSON
     {
         public bool IsAnonymous()
         {
-            return !int.TryParse(userid, out _);
+            return !userid.Contains("-") || int.TryParse(userid, out _);
         }
 
         public string userid { get; set; }

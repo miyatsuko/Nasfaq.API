@@ -28,6 +28,11 @@ namespace Nasfaq.API
             return DateTime.UtcNow.Add(new TimeSpan(hours, minutes, 0)).ToString("yyyy-MM-ddThh:mm:ss.fffZ", CultureInfo.InvariantCulture);
         }
 
+        public static long ZuluToUnix(string fundTimestamp)
+        {
+            return ((DateTimeOffset) DateTime.Parse(fundTimestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal)).ToUnixTimeMilliseconds();
+        }
+
         public static long GetCurrent()
         {
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

@@ -52,14 +52,21 @@ namespace Nasfaq.API
 
         public static IWebsocketData BytesToSocketData(byte[] data)
         {
+            return BytesToSocketData(data, out _, out _);
+        }
+
+        public static IWebsocketData BytesToSocketData(byte[] data, out string eventName, out WebsocketEventType eventType)
+        {
             string message = SocketIO.BytesToString(data);
             IWebsocketData websocketData = default;
             try
             {
-                websocketData = WebsocketReader.Read(message);
+                websocketData = WebsocketReader.Read(message, out eventName, out eventType);
             }
             catch (Exception e)
             {
+                eventName = null;
+                eventType = WebsocketEventType.Public;
                 Console.WriteLine($"Exception when trying to parse Websocket: {e.Message}\nOriginal message:\n{message}");
             }
             return websocketData;

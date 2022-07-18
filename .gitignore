@@ -5,6 +5,7 @@
 
 nuget.config
 *.old
+*.sh
 
 # User-specific files
 *.rsuser

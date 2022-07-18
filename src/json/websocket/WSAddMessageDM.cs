@@ -7,7 +7,7 @@ namespace Nasfaq.JSON
         public AddMessageDM_DM message { get; set; }
     }
     
-    public class AddMessageDM_DM : IWebsocketData
+    public class AddMessageDM_DM
     {
         public string userid { get; set; }
         public string username { get; set; }
