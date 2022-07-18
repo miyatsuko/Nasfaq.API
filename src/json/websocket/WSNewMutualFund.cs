@@ -4,6 +4,6 @@ namespace Nasfaq.JSON
     {
         public MutualFundData_Fund mutualFundInfo { get; set; }
         public MutualFundData_Stat mutualFundStats { get; set; }
-        public MutualFundData_History mutualFundHistory { get; set; }
+        public MutualFundData_History[] mutualFundHistory { get; set; }
     }
 }
