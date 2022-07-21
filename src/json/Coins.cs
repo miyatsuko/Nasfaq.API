@@ -98,6 +98,15 @@ namespace Nasfaq.JSON
         public static readonly string Nabi = "nabi";
         public static readonly string Nachoneko = "nachoneko";
 
+        public static readonly string Zeta = "zeta";
+        public static readonly string Kovalskia = "kovalskia";
+        public static readonly string Kanaeru = "kanaeru";
+
+        public static readonly string Altare = "altare";
+        public static readonly string Dezmond = "dezmond";
+        public static readonly string Syrios = "syrios";
+        public static readonly string Vesper = "vesper";
+
         public static readonly string Civia = "civia";
     }
 }
