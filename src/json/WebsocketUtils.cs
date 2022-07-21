@@ -136,7 +136,10 @@ namespace Nasfaq.JSON
                     case "updatePollVotes": return ReadStandard<WSUpdatePollVotes>(jsonElement);
                     case "togglePoll": return ReadStandard<WSTogglePoll>(jsonElement);
                     case "deletePoll": return
-                    ReadStandard<WSDeletePoll>(jsonElement); 
+                    ReadStandard<WSDeletePoll>(jsonElement);
+                    case "malePotUpdate": return ReadMalePotUpdate(jsonElement);
+                    case "noMalePotUpdate": return ReadNoMalePotUpdate(jsonElement);
+                    case "maleSideUpdate": return ReadStandard<WSMaleSideUpdate>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }
@@ -250,6 +253,16 @@ namespace Nasfaq.JSON
         private static WSOshiboardUpdate ReadOshiboardUpdate(JsonElement element)
         {
             return new WSOshiboardUpdate() { oshiboard = JsonSerializer.Deserialize<Oshiboard>(element.ToString())};
+        }
+
+        private static WSMalePotUpdate ReadMalePotUpdate(JsonElement element)
+        {
+            return new WSMalePotUpdate() { value = element.GetDouble() };
+        }
+
+        private static WSNoMalePotUpdate ReadNoMalePotUpdate(JsonElement element)
+        {
+            return new WSNoMalePotUpdate() { value = element.GetDouble() };
         }
 
         private static WSRoomUpdate ReadRoomUpdate(JsonElement element)
