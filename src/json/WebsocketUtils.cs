@@ -140,6 +140,9 @@ namespace Nasfaq.JSON
                     case "malePotUpdate": return ReadMalePotUpdate(jsonElement);
                     case "noMalePotUpdate": return ReadNoMalePotUpdate(jsonElement);
                     case "maleSideUpdate": return ReadStandard<WSMaleSideUpdate>(jsonElement);
+                    case "mutualFundFeeRateUpdate": return ReadStandard<WSMutualFundFeeRateUpdate>(jsonElement);
+                    case "mutualFundShareholderRateUpdate": return ReadStandard<WSMutualFundShareholderRateUpdate>(jsonElement);
+                    case "mutualFundCeoRateUpdate": return ReadStandard<WSMutualFundCeoRateUpdate>(jsonElement);
                 }
                 throw new KeyNotFoundException($"Websocket '{websocketName}' not handled, data: {jsonElement.ToString()}");
             }

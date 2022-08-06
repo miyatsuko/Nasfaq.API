@@ -46,6 +46,9 @@ namespace Nasfaq.JSON
         public string ceo { get; set; }
         public double balance { get; set; }
         public bool released { get; set; }
+        public double fee { get; set; }
+        public double shareholderDivRate { get; set; }
+        public double ceoDivRate { get; set; }
         public MutualFundData_Fund_Member[] members { get; set; }
         public Dictionary<string, MutualFundData_Fund_Portfolio> portfolio { get; set; }
     }

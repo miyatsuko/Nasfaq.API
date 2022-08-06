@@ -35,6 +35,7 @@ namespace Nasfaq.JSON
         public string[] valentines { get; set; }
         public bool inCouple { get; set; }
         public bool active { get; set; }
+        public bool ownsMales { get; set; }
     }
 
     public class Oshiboard
