@@ -102,6 +102,23 @@ namespace Nasfaq.JSON
         public static readonly string Kovalskia = "kovalskia";
         public static readonly string Kanaeru = "kanaeru";
 
+        public static readonly string Miyabi = "miyabi";
+        public static readonly string Izuru = "izuru";
+        public static readonly string Arurandeisu = "aruran";
+        public static readonly string Rikka = "rikka";
+
+        public static readonly string Leda = "leda";
+        public static readonly string Temma = "temma";
+        public static readonly string Roberu = "roberu";
+
+        public static readonly string Shien = "shien";
+        public static readonly string Oga = "oga";
+
+        public static readonly string Fuma = "fuma";
+        public static readonly string Uyu = "uyu";
+        public static readonly string Gamma = "gamma";
+        public static readonly string Rio = "rio";
+
         public static readonly string Altare = "altare";
         public static readonly string Dezmond = "dezmond";
         public static readonly string Syrios = "syrios";
